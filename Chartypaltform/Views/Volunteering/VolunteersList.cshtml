@@ -6,17 +6,29 @@
 
 <h1>Volunteers List</h1>
 
+
 <form asp-action="VolunteersList1" method="get">
     <div>
-        <label for="searchTerm">Search by Username or Task Description:</label>
-        <!--<input type="text" id="searchTerm" name="searchTerm" value="Request.Query["searchTerm"]" />-->
+        <label for="searchTerm">Search:</label>
+        <input type="text" name="searchTerm" value="@ViewData["SearchTerm"]" />
+    </div>
     <div>
         <label for="minAge">Min Age:</label>
-        <input type="number" id="minAge" name="minAge" value="@ViewData["MinAge"]" />
+        <input type="number" name="minAge" value="@ViewData["MinAge"]" />
     </div>
     <div>
         <label for="maxAge">Max Age:</label>
-        <input type="number" id="maxAge" name="maxAge" value="@ViewData["MaxAge"]" />
+        <input type="number" name="maxAge" value="@ViewData["MaxAge"]" />
+    </div>
+    <div>
+        <label for="gender">Select Gender:</label>
+        @Html.DropDownList("selectedGender", new SelectList(new List<SelectListItem>
+        {
+        new SelectListItem { Value = "", Text = "All" },
+        new SelectListItem { Value = "Male", Text = "Male" },
+        new SelectListItem { Value = "Female", Text = "Female" },
+        new SelectListItem { Value = "Other", Text = "Other" }
+        }, "Value", "Text", ViewData["SelectedGender"]), "All", new { @id = "gender" })
     </div>
     <button type="submit">Filter</button>
 </form>

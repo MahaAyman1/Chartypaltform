@@ -32,7 +32,10 @@ app.UseRouting();
 app.UseAuthentication(); // Add this if you are using authentication
 
 app.UseAuthorization();
-
+app.MapControllerRoute(
+  name: "areas",
+  pattern: "{area:exists}/{controller=Administrator}/{action=Index}/{id?}"
+);
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

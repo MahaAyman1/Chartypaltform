@@ -108,6 +108,105 @@ namespace Chartypaltform.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("Chartypaltform.Models.Campaign", b =>
+                {
+                    b.Property<int>("CampaignId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CampaignId"));
+
+                    b.Property<string>("CampaignDes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CampaignImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CampaignName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CurrentAmountRaised")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GoalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CampaignId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Campaigns");
+                });
+
+            modelBuilder.Entity("Chartypaltform.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<int?>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId");
+
+                    b.HasIndex("CampaignId");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("Chartypaltform.Models.Complaint", b =>
+                {
+                    b.Property<int>("ComplaintId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComplaintId"));
+
+                    b.Property<string>("ComplaintText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ComplaintId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Complaints");
+                });
+
             modelBuilder.Entity("Chartypaltform.Models.Success_Story", b =>
                 {
                     b.Property<int>("Id")
@@ -377,6 +476,35 @@ namespace Chartypaltform.Migrations
                     b.HasDiscriminator().HasValue("Donor");
                 });
 
+            modelBuilder.Entity("Chartypaltform.Models.Campaign", b =>
+                {
+                    b.HasOne("Chartypaltform.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chartypaltform.Models.Category", b =>
+                {
+                    b.HasOne("Chartypaltform.Models.Campaign", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("CampaignId");
+                });
+
+            modelBuilder.Entity("Chartypaltform.Models.Complaint", b =>
+                {
+                    b.HasOne("Chartypaltform.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Chartypaltform.Models.Success_Story", b =>
                 {
                     b.HasOne("Chartypaltform.Models.CharityOrganization", "CharityOrganization")
@@ -457,6 +585,11 @@ namespace Chartypaltform.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Chartypaltform.Models.Campaign", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Chartypaltform.Models.Volunteering", b =>

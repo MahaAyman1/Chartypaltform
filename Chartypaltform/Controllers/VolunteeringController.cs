@@ -51,7 +51,7 @@ namespace Chartypaltform.Controllers
 
                 _context.Volunteerings.Add(volunteeringOpportunity);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index" , "Home"); // Redirect after creation
+                return RedirectToAction("Index", "Home"); // Redirect after creation
             }
 
             return View(model); // Return the view with the model if validation fails
@@ -83,7 +83,7 @@ namespace Chartypaltform.Controllers
         }
 
 
-        public async Task<IActionResult> VolunteersList1(string searchTerm, int? minAge, int? maxAge)
+        public async Task<IActionResult> VolunteersList1(string searchTerm, int? minAge, int? maxAge, string selectedGender)
         {
             // Retrieve the data from the database
             var volunteerQuery = _context.Volunteerings
@@ -92,9 +92,12 @@ namespace Chartypaltform.Controllers
                 .AsQueryable(); // Start with IQueryable for efficient filtering
 
             // Apply filtering based on search terms (if provided)
-            
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                volunteerQuery = volunteerQuery.Where(v =>
+                    v.User.Address.Contains(searchTerm)); // Adjust based on your actual User properties
+            }
 
-            // Apply filtering based on age range (if provided)
             // Apply filtering based on age range (if provided)
             if (minAge.HasValue || maxAge.HasValue)
             {
@@ -102,10 +105,17 @@ namespace Chartypaltform.Controllers
                     v.User != null && // Check if User is not null
                     v.User.GetType() == typeof(Donor) && // Ensure it's a Donor
                     ((Donor)v.User).Age >= (minAge ?? 0) && // Cast and apply min age filter
-                    ((Donor)v.User).Age <= (maxAge ?? int.MaxValue) // Cast and apply max age filter
-                );
+                    ((Donor)v.User).Age <= (maxAge ?? int.MaxValue)); // Cast and apply max age filter
             }
 
+            // Apply filtering based on selected gender (if provided)
+            if (!string.IsNullOrEmpty(selectedGender))
+            {
+                volunteerQuery = volunteerQuery.Where(v =>
+                    v.User != null && // Ensure User is not null
+                    v.User.GetType() == typeof(Donor) && // Ensure it's a Donor
+                    ((Donor)v.User).Gender.ToLower() == selectedGender.ToLower()); // Use ToLower() for case-insensitive comparison
+            }
 
             // Execute the query and retrieve the list of volunteers
             var volunteerList = await volunteerQuery.ToListAsync();
@@ -124,11 +134,9 @@ namespace Chartypaltform.Controllers
 
             ViewData["MinAge"] = minAge;
             ViewData["MaxAge"] = maxAge;
+            ViewData["SelectedGender"] = selectedGender; // Store selected gender for the view
             return View("VolunteersList", result);
         }
 
-
     }
-
-}
-
+} 
