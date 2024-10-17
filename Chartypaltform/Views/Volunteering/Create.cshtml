@@ -1,0 +1,41 @@
+﻿@model Chartypaltform.ViewModels.CreateVolunteeringViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="AvailableFrom" class="control-label"></label>
+        <input asp-for="AvailableFrom" class="form-control" type="datetime-local" />
+        <span asp-validation-for="AvailableFrom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AvailableTo" class="control-label"></label>
+        <input asp-for="AvailableTo" class="form-control" type="datetime-local" />
+        <span asp-validation-for="AvailableTo" class="text-danger"></span>
+    </div>
+
+    <h4>Select Tasks</h4>
+    <div>
+        @foreach (var task in Enum.GetValues(typeof(VolunteeringTask)).Cast<VolunteeringTask>())
+        {
+            <div>
+                <input type="checkbox" name="SelectedTasks" value="@task" />
+                <label>@task</label>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

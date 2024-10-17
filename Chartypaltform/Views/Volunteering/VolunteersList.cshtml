@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Chartypaltform.ViewModels.VolunteerListViewModel>
+
+@{
+    ViewData["Title"] = "Volunteers List";
+}
+
+<h1>Volunteers List</h1>
+
+<form asp-action="VolunteersList1" method="get">
+    <div>
+        <label for="searchTerm">Search by Username or Task Description:</label>
+        <!--<input type="text" id="searchTerm" name="searchTerm" value="Request.Query["searchTerm"]" />-->
+    <div>
+        <label for="minAge">Min Age:</label>
+        <input type="number" id="minAge" name="minAge" value="@ViewData["MinAge"]" />
+    </div>
+    <div>
+        <label for="maxAge">Max Age:</label>
+        <input type="number" id="maxAge" name="maxAge" value="@ViewData["MaxAge"]" />
+    </div>
+    <button type="submit">Filter</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Volunteer Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Available From</th>
+            <th>Available To</th>
+            <th>Tasks</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var volunteer in Model)
+        {
+            <tr>
+                <td>@volunteer.UserName</td>
+                <td>@volunteer.Age</td>
+                <td>@volunteer.Gender</td>
+                <td>@volunteer.AvailableFrom.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@volunteer.AvailableTo.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <ul>
+                        @foreach (var task in volunteer.SelectedTasks)
+                        {
+                            <li>@task</li>
+                        }
+                    </ul>
+                </td>
+                <td>@volunteer.Address</td>
+            </tr>
+        }
+    </tbody>
+</table>
