@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Chartypaltform.Models.Complaint>
+
+@{
+    ViewData["Title"] = "Complaints List";
+    ViewBag.ShowHeroSection = true;
+
+}
+
+<h1>Complaints List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Complaint Text
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Created At
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.ComplaintText
+                </td>
+                <td>
+                    @item.User.Email
+                </td>
+                <td>
+                    @item.CreatedAt.ToString("g")
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ComplaintId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Create" class="btn btn-primary">Create New Complaint</a>
+</div>

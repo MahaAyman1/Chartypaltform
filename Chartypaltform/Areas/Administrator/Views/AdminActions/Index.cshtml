@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Chartypaltform.ViewModels.AdminActionViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+<h1>Admin Actions</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Action Type</th>
+            <th>Action Details</th>
+            <th>Reason</th>
+            <th>Timestamp</th>
+            <th>Admin Full Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var action in Model)
+        {
+            <tr>
+                <td>@action.ActionType</td>
+                <td>@action.ActionDetails</td>
+                <td>@action.Reason</td>
+                <td>@action.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@action.AdminFullName</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -39,5 +39,8 @@ namespace Chartypaltform.ViewModels
         public string FacebookLink { get; set; }
         public string GoogleLink { get; set; }
         public DateTime? CreatedAT { get; set; }
+
+        public IFormFile? formFile { get; set; }
+
     }
 }

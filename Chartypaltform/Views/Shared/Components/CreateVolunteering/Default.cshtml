@@ -1,0 +1,64 @@
+﻿@model Chartypaltform.ViewModels.CreateVolunteeringViewModel
+@if (User.IsInRole("Organization"))
+{
+    <a class="btn btn-primary mt-4" asp-action="VolunteersList" asp-controller="Volunteering">
+        Display volunteer Info
+    </a>
+}
+@if (User.IsInRole("Donor"))
+{
+    <a class="btn btn-primary mt-4" asp-action="MyVolunteeringOpportunities" asp-controller="Volunteering">
+        My Volunteering 
+    </a>
+}
+
+<section class="ftco-section-3 img" style="background-image: url(../images/bg_3.jpg);">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row d-md-flex">
+            <div class="col-md-6 d-flex ftco-animate">
+                <div class="img img-2 align-self-stretch" style="background-image: url(../images/bg_4.jpg);"></div>
+            </div>
+            <div class="col-md-6 volunteer pl-md-5 ftco-animate">
+                <h3 class="mb-3">Be a volunteer</h3>
+                <form method="post" asp-action="Create" asp-controller="Volunteering" class="volunter-form">
+                    <div class="form-group">
+                        <label asp-for="AvailableFrom" class="control-label"></label>
+                        <input asp-for="AvailableFrom" class="form-control" type="datetime-local"  />
+                        <span asp-validation-for="AvailableFrom" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AvailableTo" class="control-label"></label>
+                        <input asp-for="AvailableTo" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="AvailableTo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <h4>Select Tasks</h4>
+                        <div>
+                            @foreach (var task in Enum.GetValues(typeof(VolunteeringTask)).Cast<VolunteeringTask>())
+                            {
+                                <div>
+                                    <input type="checkbox" name="SelectedTasks" value="@task" />
+                                    <label style="color: white;">@task</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    @if (User.IsInRole("Donor"))
+                    {
+                        <div class="form-group">
+
+                        <button type="submit" class="btn btn-white py-3 px-5">submit</button>
+
+                    </div>}
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        Html.RenderPartial("_ValidationScriptsPartial");
+    }
+}

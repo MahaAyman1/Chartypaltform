@@ -9,7 +9,7 @@ namespace Chartypaltform.Models
 
         // Foreign key to Volunteering
         public int VolunteeringId { get; set; }
-        public Volunteering Volunteering { get; set; } // Navigation property
+        public Volunteering Volunteering { get; set; }
 
         // The task selected from the enum
         public VolunteeringTask TaskDescription { get; set; }

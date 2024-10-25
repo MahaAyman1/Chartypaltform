@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<ApplicationUser> _signInManager;
+ @inject UserManager<ApplicationUser> _userManager;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>@ViewData["Title"] - HopeGivers</title>
@@ -28,7 +32,7 @@
     <link rel="stylesheet" href="~/css/style.css">
    
    
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
 </head>
 <body>
@@ -38,40 +42,113 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
-
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="causes.html" class="nav-link">Causes</a></li>
-                    <li class="nav-item"><a href="donate.html" class="nav-link">Donate</a></li>
-                    <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                    <li class="nav-item"><a href="gallery.html" class="nav-link">Gallery</a></li>
-                    <li class="nav-item"><a href="event.html" class="nav-link">Events</a></li>
-                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                    @await Component.InvokeAsync("Menu")
+                    @if (_signInManager.IsSignedIn(User))
+                    {
+                        var user = await _userManager.FindByEmailAsync(User.Identity.Name); // Get the logged-in user
+                        if (user != null)
+                        {
+                            // Check if the user is in the Organization role
+                            if (await _userManager.IsInRoleAsync(user, "Organization"))
+                            {
+                                // Cast to CharityOrganization to access registration status
+                                var organizationUser = user as CharityOrganization;
+                                if (organizationUser != null)
+                                {
+                                    if (organizationUser.registration_status == RegistrationStatus.Approved)
+                                    {
+                                        // Show organization-specific navigation for approved organizations
+                                        <li class="nav-item active">
+                                            <form asp-controller="Account" asp-action="Logout" method="post" class="nav-item">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="nav-link btn btn-link">
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </li>
+                                    }
+                                    else if (organizationUser.registration_status == RegistrationStatus.Pending)
+                                    {
+                                        // If the organization status is pending, do not show logout option, show login/register instead
+                                        <li class="nav-item active">
+                                            <span class="nav-link">Your organization status is pending. Please wait for approval.</span>
+                                        </li>
+                                    }
+                                    else if (organizationUser.registration_status == RegistrationStatus.Rejected)
+                                    {
+                                        // Handle rejected organizations
+                                        <li class="nav-item active">
+                                            <span class="nav-link">Your organization has been rejected. Contact support.</span>
+                                        </li>
+                                    }
+                                }
+                            }
+                            else if (await _userManager.IsInRoleAsync(user, "Donor"))
+                            {
+                                // Show donor-specific navigation
+                                <li class="nav-item active">
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="nav-item">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="nav-link btn btn-link">
+                                            Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                           
+                        }
+                    }
+                    else
+                    {
+                        // Not signed in: Show Login and Register options
+                        <li class="nav-item active">
+                            <a asp-action="Login" asp-controller="Account" class="nav-link">Login</a>
+                        </li>
+                        <li class="nav-item dropdown active">
+                            <a class="nav-link dropdown-toggle" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Register
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="registerDropdown">
+                                <a class="dropdown-item" href="register_donor.html">Donor</a>
+                                <a class="dropdown-item" href="register_organization.html">Organization</a>
+                            </div>
+                        </li>
+                    }
+
                 </ul>
             </div>
+
+          
         </div>
     </nav>
-    <div class="hero-wrap" style="background-image: url('../images/bg_7.jpg');" data-stellar-background-ratio="0.5">
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row no-gutters slider-text align-items-center justify-content-center" data-scrollax-parent="true">
-                <div class="col-md-7 ftco-animate text-center" data-scrollax=" properties: { translateY: '70%' }">
-                    <h1 class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Doing Nothing is Not An Option of Our Life</h1>
-                    <!-- <p class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Created by <a href="#">Colorlib.com</a></p>-->
+  
 
-                    <p data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><a href="https://vimeo.com/45830194" class="btn btn-white btn-outline-white px-4 py-3 popup-vimeo"><span class="icon-play mr-2"></span>Watch Video</a></p>
+
+    @if (ViewBag.ShowHeroSection != null && (bool)ViewBag.ShowHeroSection)
+    {
+        <div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_7.jpg")');" data-stellar-background-ratio="0.5">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center" data-scrollax-parent="true">
+                    <div class="col-md-7 ftco-animate text-center" data-scrollax="properties: { translateY: '70%' }">
+                        <h1 class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Doing Nothing is Not An Option of Our Life</h1>
+                        <p data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><a href="https://vimeo.com/45830194" class="btn btn-white btn-outline-white px-4 py-3 popup-vimeo"><span class="icon-play mr-2"></span>Watch Video</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
     <div class="container">
         <main role="main" class="pb-3">
+            <partial name="_notification.cshtml" />
+
             @RenderBody()
         </main>
     </div>
-    <footer class="ftco-footer ftco-section img">
+
+ <footer class="ftco-footer ftco-section img">
         <div class="overlay"></div>
         <div class="container">
             <div class="row mb-5">
@@ -86,43 +163,13 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="ftco-footer-widget mb-4">
-                        <h2 class="ftco-heading-2">Recent Blog</h2>
-                        <div class="block-21 mb-4 d-flex">
-                            <a class="blog-img mr-4" style="background-image: url(../images/image_1.jpg);"></a>
-                            <div class="text">
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about</a></h3>
-                                <div class="meta">
-                                    <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>
-                                    <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="block-21 mb-4 d-flex">
-                            <a class="blog-img mr-4" style="background-image: url(../images/image_2.jpg);"></a>
-                            <div class="text">
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about</a></h3>
-                                <div class="meta">
-                                    <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>
-                                    <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-md-2">
                     <div class="ftco-footer-widget mb-4 ml-md-4">
                         <h2 class="ftco-heading-2">Site Links</h2>
                         <ul class="list-unstyled">
                             <li><a href="#" class="py-2 d-block">Home</a></li>
                             <li><a href="#" class="py-2 d-block">About</a></li>
-                            <li><a href="#" class="py-2 d-block">Donate</a></li>
-                            <li><a href="#" class="py-2 d-block">Causes</a></li>
-                            <li><a href="#" class="py-2 d-block">Event</a></li>
-                            <li><a href="#" class="py-2 d-block">Blog</a></li>
+                          
                         </ul>
                     </div>
                 </div>

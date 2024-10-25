@@ -1,0 +1,11 @@
+﻿@model Chartypaltform.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<h1>Welcome, @Model.AdminFullName!</h1>
+<p>Registered on: @Model.RegisteredAt.ToString("yyyy-MM-dd")</p>
+<p>Phone: @Model.PhoneNumber</p>
+<p>Address: @Model.Address</p>

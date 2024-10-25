@@ -1,0 +1,41 @@
+﻿@model Chartypaltform.Models.Event
+
+@{
+    ViewBag.Title = "Event Details";
+    ViewBag.ShowHeroSection = true;
+}
+
+
+<h2>@Model.Title</h2>
+
+<p>@Model.Description</p>
+<p><strong>Location:</strong> @Model.Location</p>
+<p><strong>Event Date:</strong> @Model.EventDate.ToShortDateString()</p>
+<p><strong>Max Participants:</strong> @Model.MaxParticipants</p>
+
+<!-- Button to open Google Maps link -->
+<a href="@Model.LocationUrl" class="btn btn-info" target="_blank">View Location on Google Maps</a>
+
+@if (User.IsInRole("Donor"))
+{
+    <form asp-action="Join" method="post">
+        <input type="hidden" name="eventId" value="@Model.Id" />
+        <button type="submit" class="btn btn-success">Join Event</button>
+    </form>
+}
+
+<h3>Attendees</h3>
+<ul>
+    @if (Model.Attendees != null && Model.Attendees.Any())
+    {
+        foreach (var attendee in Model.Attendees)
+        {
+            <li>@attendee.FullName ,@attendee.Img , @attendee.Age , @attendee.Email , @attendee.Gender  </li>
+            
+        }
+    }
+    else
+    {
+        <li>No attendees yet.</li>
+    }
+</ul>

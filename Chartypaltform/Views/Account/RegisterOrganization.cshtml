@@ -1,81 +1,99 @@
 ﻿@model Chartypaltform.ViewModels.CharityOrganizationRegistrationModel
 
 @{
-    ViewData["Title"] = "RegisterOrganization";
+    ViewData["Title"] = "Register Organization";
+    ViewBag.ShowHeroSection = true;
+
 }
 
-<h1>RegisterOrganization</h1>
+<div class="container mt-5">
+    <h1 class="text-center">Register Your Organization</h1>
+    <h4 class="text-center text-muted">Charity Organization Registration</h4>
+    <hr />
 
-<h4>CharityOrganizationRegistrationModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="RegisterOrganization" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="OrganizationName" class="control-label"></label>
-                <input asp-for="OrganizationName" class="form-control" />
-                <span asp-validation-for="OrganizationName" class="text-danger"></span>
-            </div>
-           
-            <div class="form-group">
-                <label asp-for="InstagramLink" class="control-label"></label>
-                <input asp-for="InstagramLink" class="form-control" />
-                <span asp-validation-for="InstagramLink" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FacebookLink" class="control-label"></label>
-                <input asp-for="FacebookLink" class="form-control" />
-                <span asp-validation-for="FacebookLink" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GoogleLink" class="control-label"></label>
-                <input asp-for="GoogleLink" class="form-control" />
-                <span asp-validation-for="GoogleLink" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAT" class="control-label"></label>
-                <input asp-for="CreatedAT" class="form-control" />
-                <span asp-validation-for="CreatedAT" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RegisteredAt" class="control-label"></label>
-                <input asp-for="RegisteredAt" class="form-control" />
-                <span asp-validation-for="RegisteredAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Img" class="control-label"></label>
-                <input asp-for="Img" class="form-control" />
-                <span asp-validation-for="Img" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="RegisterOrganization" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmEmail" class="control-label"></label>
+                    <input asp-for="ConfirmEmail" class="form-control" placeholder="Confirm your email" />
+                    <span asp-validation-for="ConfirmEmail" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="OrganizationName" class="control-label"></label>
+                    <input asp-for="OrganizationName" class="form-control" placeholder="Organization Name" />
+                    <span asp-validation-for="OrganizationName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="InstagramLink" class="control-label"></label>
+                    <input asp-for="InstagramLink" class="form-control" placeholder="Instagram Profile Link" />
+                    <span asp-validation-for="InstagramLink" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="FacebookLink" class="control-label"></label>
+                    <input asp-for="FacebookLink" class="form-control" placeholder="Facebook Profile Link" />
+                    <span asp-validation-for="FacebookLink" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="GoogleLink" class="control-label"></label>
+                    <input asp-for="GoogleLink" class="form-control" placeholder="Google Profile Link" />
+                    <span asp-validation-for="GoogleLink" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CreatedAT" class="control-label"></label>
+                    <input asp-for="CreatedAT" type="date" class="form-control" />
+                    <span asp-validation-for="CreatedAT" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Address" class="control-label"></label>
+                    <input asp-for="Address" class="form-control" placeholder="Organization Address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="control-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="formFile" class="control-label">Upload Document</label>
+                    <input asp-for="formFile" type="file" class="form-control" />
+                    <span asp-validation-for="formFile" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Create a Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Register As Organization" class="btn btn-primary btn-lg" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    
 </div>
-

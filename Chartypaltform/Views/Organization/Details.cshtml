@@ -1,0 +1,40 @@
+﻿@model Chartypaltform.Models.CharityOrganization
+
+@{
+    ViewData["Title"] = "Details";
+    ViewBag.ShowHeroSection = true;
+}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center">
+            <h1>@Model.OrganizationName</h1>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-3">
+                <img src="@Model.Img" class="img-fluid rounded-circle" alt="@Model.OrganizationName" />
+            </div>
+            <p><strong>Registered At:</strong> @Model.RegisteredAt</p>
+            <p><strong>Address:</strong> @Model.Address</p>
+            <p><strong>Phone Number:</strong> @Model.PhoneNumber</p>
+            <p><strong>Event:</strong> @Model.Event</p>
+            <p><strong>Contact:</strong></p>
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    <strong>Email:</strong> @Model.Email
+                </li>
+                <li class="list-inline-item">
+                    <strong>Instagram:</strong> <a href="@Model.InstagramLink" target="_blank">@Model.InstagramLink</a>
+                </li>
+                <li class="list-inline-item">
+                    <strong>Facebook:</strong> <a href="@Model.FacebookLink" target="_blank">@Model.FacebookLink</a>
+                </li>
+                <li class="list-inline-item">
+                    <strong>Google:</strong> <a href="@Model.GoogleLink" target="_blank">@Model.GoogleLink</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+

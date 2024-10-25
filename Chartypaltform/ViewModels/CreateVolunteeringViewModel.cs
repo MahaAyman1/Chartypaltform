@@ -5,14 +5,16 @@ namespace Chartypaltform.ViewModels
 {
     public class CreateVolunteeringViewModel
     {
+        public int Id { get; set; }  // Add this line
+
         [Required]
         public DateTime AvailableFrom { get; set; }
 
         [Required]
         public DateTime AvailableTo { get; set; }
 
-        // List of volunteering tasks
-        public List<VolunteeringTask> SelectedTasks { get; set; } = new List<VolunteeringTask>();
+         public List<VolunteeringTask> SelectedTasks { get; set; } = new List<VolunteeringTask>();
+
     }
 
 }

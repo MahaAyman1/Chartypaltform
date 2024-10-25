@@ -9,6 +9,9 @@ namespace Chartypaltform.Models
         public string PhoneNumber { get; set; }
         public string Img { get; set; }
 
+        public virtual ICollection<Event> CreatedEvents { get; set; } // Events created by the user
+        public virtual ICollection<Event> JoinedEvents { get; set; } 
+
     }
 
 }
