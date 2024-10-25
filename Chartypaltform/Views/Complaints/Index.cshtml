@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Complaints List";
+    ViewBag.ShowHeroSection = true;
+
 }
 
 <h1>Complaints List</h1>
@@ -29,7 +31,7 @@
                     @item.ComplaintText
                 </td>
                 <td>
-                    @item.Status
+                    @item.User.Email
                 </td>
                 <td>
                     @item.CreatedAt.ToString("g")

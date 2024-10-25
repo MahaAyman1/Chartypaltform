@@ -5,6 +5,7 @@ namespace Chartypaltform.ViewModels
 {
     public class VolunteerListViewModel
     {
+        public int Id { get; set; } 
         public string UserName { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
@@ -14,6 +15,9 @@ namespace Chartypaltform.ViewModels
         public string Address { get; set; }
 
         public string SelectedGender { get; set; }
+        public string phone { get; set; }
+        public string FullName { get; set; }
+
         public List<SelectListItem> ModelGenderList { get; set; }
     }
 

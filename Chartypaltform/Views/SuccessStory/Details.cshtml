@@ -1,0 +1,122 @@
+﻿@model SuccessCampaign
+
+@{
+    ViewData["Title"] = "Details";
+    ViewBag.ShowHeroSection = true;
+}
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #7f8c8d;
+        }
+
+    .campaign-info {
+        margin-bottom: 30px;
+        border: 1px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .evidence-images {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin: 20px 0;
+    }
+
+        .evidence-images div {
+            flex: 1 1 calc(25% - 10px);
+            margin: 5px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .evidence-images img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+            .evidence-images img:hover {
+                transform: scale(1.05);
+            }
+
+    .pdf-link {
+        margin-top: 20px;
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+        .pdf-link:hover {
+            background-color: #2980b9;
+        }
+
+    .no-images {
+        text-align: center;
+        color: #e74c3c;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>@Model.title</h1>
+        <p>@Model.impact</p>
+        <p>Campaign: @(Model.Campaign != null ? Model.Campaign.CampaignName : "No Campaign Found")</p>
+    </div>
+
+    <div class="campaign-info">
+        <h4>Evidence Images</h4>
+        @if (Model.ImagePaths != null && Model.ImagePaths.Any())
+        {
+            <div class="evidence-images">
+                @foreach (var img in Model.ImagePaths)
+                {
+                    <div>
+                        <a href="@img" target="_blank">
+                            <img src="@img" alt="Evidence Image" />
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="no-images">No images available.</p>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.PdfPath))
+    {
+        <div>
+            <h4>PDF Document</h4>
+            <a class="pdf-link" href="@Model.PdfPath" target="_blank">View PDF</a>
+        </div>
+    }
+</div>

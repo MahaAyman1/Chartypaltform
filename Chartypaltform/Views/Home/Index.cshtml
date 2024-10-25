@@ -1,13 +1,76 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Home Page";
+    ViewBag.ShowHeroSection = true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
-    <a asp-action="Create" asp-controller="Volunteering">Create</a>
+<section class="ftco-counter ftco-intro" id="section-counter">
+    <div class="container">
+        <div class="row no-gutters">
+            <div class="col-md-5 d-flex justify-content-center counter-wrap ftco-animate">
+                <div class="block-18 color-1 align-items-stretch">
+                    <div class="text">
+                        <span>Completed Over</span>
+                        <strong class="number" data-number="@ViewBag.CompletedCount">0</strong>
+                        <span>Delivering impactful campaigns that inspire change around the world</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md d-flex justify-content-center counter-wrap ftco-animate">
+                <div class="block-18 color-2 align-items-stretch">
+                    <div class="text">
+                        <h3 class="mb-4">Donate Money</h3>
+                        <p>Your donation can change lives—give what you can</p>
+                        <p><a href="#" class="btn btn-white px-3 py-2 mt-2">Donate Now</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md d-flex justify-content-center counter-wrap ftco-animate">
+                <div class="block-18 color-3 align-items-stretch">
+                    <div class="text">
+                        <h3 class="mb-4">Be a Volunteer</h3>
+                        <p>Be a volunteer and spark change—your kindness can make a real difference</p>
+                        <p><a href="#" class="btn btn-white px-3 py-2 mt-2">Be A Volunteer</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <a asp-action="Create" asp-controller="Complaints">Create</a>
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 d-flex services p-3 py-4 d-block">
+                    <div class="icon d-flex mb-3"><span class="flaticon-donation-1"></span></div>
+                    <div class="media-body pl-4">
+                        <h3 class="heading">Make Donation</h3>
+                        <p>Your donation can change lives—give what you can</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 d-flex services p-3 py-4 d-block">
+                    <div class="icon d-flex mb-3"><span class="flaticon-charity"></span></div>
+                    <div class="media-body pl-4">
+                        <h3 class="heading">Become A Volunteer</h3>
+                        <p>Be a volunteer and spark change—your kindness can make a real difference</p>
+                    </div>
+                </div>
+            </div>
+         
+        </div>
+    </div>
+</section>
+@if (User.Identity.IsAuthenticated)
+{
 
-</div>
+@await Component.InvokeAsync("LatestCampaign")
+
+@await Component.InvokeAsync("LatestEvent")
+
+@await Component.InvokeAsync("CreateVolunteering")
+
+}

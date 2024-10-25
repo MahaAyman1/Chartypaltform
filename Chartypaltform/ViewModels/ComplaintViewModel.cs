@@ -8,5 +8,9 @@ namespace Chartypaltform.Models.ViewModels
         [MinLength(10)]
         [DataType(DataType.MultilineText)]
         public string ComplaintText { get; set; }
+
+
+
+        public string Subject { get; set; }     
     }
 }

@@ -1,0 +1,11 @@
+﻿@model IEnumerable<Chartypaltform.Models.Event>
+
+@{
+    ViewBag.Title = "Events List";
+    ViewBag.ShowHeroSection = true;
+
+}
+
+
+
+@await Component.InvokeAsync("Event")

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Chartypaltform.Models
 {
@@ -6,11 +7,12 @@ namespace Chartypaltform.Models
 	{
 		[Key]
 		public int CampaignId { get; set; }
+        [Required]
 
-		[Required]
-		public string CampaignImg { get; set; }
-
-		[Required]
+        public string? CampaignImg { get; set; }
+        [NotMapped]
+        public IFormFile? formFile { get; set; }
+        [Required]
 		[MaxLength(100)]
 		public string CampaignName { get; set; }
 
@@ -31,14 +33,18 @@ namespace Chartypaltform.Models
 		[DataType(DataType.DateTime)]
 		public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-		// Foreign Key Relationship to Category
 		public int CategoryId { get; set; }
-		public List<Category> Categories { get; set; }
-		public string UserId { get; set; } // Use string to store user ID
-		public ApplicationUser User { get; set; } // Reference to the user
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual CharityOrganization User { get; set; }
+		public ICollection<SuccessCampaign> SuccessCampaigns { get; set; }
+
+
+
 	}
 
-	// Enum for Campaign Status
+
 	public enum CampaignStatus
 	{
 		Pending, // Default
@@ -47,8 +53,3 @@ namespace Chartypaltform.Models
 		Closed
 	}
 }
-
-
-
-
-

@@ -14,11 +14,11 @@ namespace Chartypaltform.Models
 		[MinLength(10)]
 		[DataType(DataType.MultilineText)]  
 		public string ComplaintText { get; set; }
-
-		[Required]
-		public ComplaintStatus Status { get; set; } = ComplaintStatus.Pending;  
-
-		[DataType(DataType.DateTime)]
+        [Required]
+        public ComplaintStatus Status { get; set; }
+        [Required]
+        public string Subject { get; set; }	
+        [DataType(DataType.DateTime)]
 		public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public string UserId { get; set; } // Use string to store user ID

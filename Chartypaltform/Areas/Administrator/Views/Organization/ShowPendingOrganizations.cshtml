@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Chartypaltform.Models.CharityOrganization>
+
+@{
+    ViewData["Title"] = "Pending Charity Organizations";
+}
+
+<h2>Pending Charity Organizations</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Organization Name</th>
+            <th>Registration Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var org in Model)
+            {
+                <tr>
+                    <td>@org.OrganizationName</td>
+                    <td>@org.registration_status</td>
+                    <td>@org.CreatedAT?.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <form asp-action="ApproveOrganization" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@org.Id" />
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </form>
+                        <form asp-action="RejectOrganization" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@org.Id" />
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No pending organizations found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

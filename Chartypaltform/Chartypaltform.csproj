@@ -33,6 +33,10 @@
   <ItemGroup>
     <Folder Include="Areas\Administrator\Data\" />
     <Folder Include="Areas\Administrator\Models\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\EventImg\" />
+    <Folder Include="wwwroot\uploads\images\" />
+    <Folder Include="wwwroot\uploads\pdfs\" />
   </ItemGroup>
 
 </Project>

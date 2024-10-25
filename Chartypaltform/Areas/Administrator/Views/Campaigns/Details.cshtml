@@ -1,0 +1,55 @@
+﻿@model Chartypaltform.Models.Campaign
+
+@{
+    ViewData["Title"] = "Campaign Details";
+}
+
+<h1>Campaign Details</h1>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Campaign Image</th>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.CampaignImg))
+            {
+                <img src="@Model.CampaignImg" alt="Campaign Image" class="img-fluid" style="max-width: 150px;" />
+            }
+            else
+            {
+                <span>No image available</span>
+            }
+        </td>
+    </tr>
+    <tr>
+        <th>Campaign Name</th>
+        <td>@Html.DisplayFor(model => model.CampaignName)</td>
+    </tr>
+    <tr>
+        <th>Description</th>
+        <td>@Html.DisplayFor(model => model.CampaignDes)</td>
+    </tr>
+    <tr>
+        <th>Goal Amount</th>
+        <td>@Html.DisplayFor(model => model.GoalAmount)</td>
+    </tr>
+    <tr>
+        <th>Current Amount Raised</th>
+        <td>@Html.DisplayFor(model => model.CurrentAmountRaised)</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>@Html.DisplayFor(model => model.Status)</td>
+    </tr>
+    <tr>
+        <th>Created At</th>
+        <td>@Html.DisplayFor(model => model.CreatedAt)</td>
+    </tr>
+    
+        <th>Created By (User ID)</th>
+        <td>@Html.DisplayFor(model => model.User.Email)</td>
+    </tr>
+</table>
+
+<div>
+    <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+</div>

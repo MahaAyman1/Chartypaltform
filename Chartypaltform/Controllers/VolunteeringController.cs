@@ -1,4 +1,5 @@
-﻿using Chartypaltform.Data;
+﻿
+using Chartypaltform.Data;
 using Chartypaltform.Models;
 using Chartypaltform.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,6 @@ using System.Security.Claims;
 namespace Chartypaltform.Controllers
 {
     [Authorize]
-
     public class VolunteeringController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,108 +19,201 @@ namespace Chartypaltform.Controllers
             _context = context;
         }
 
-        // GET: Volunteering/Create
+        [HttpGet]
         [Authorize(Roles = "Donor")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Volunteering/Create
-        [Authorize(Roles = "Donor")]
         [HttpPost]
+        [Authorize(Roles = "Donor")]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Create(CreateVolunteeringViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Get the user ID from claims
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var volunteeringOpportunity = new Volunteering
                 {
                     AvailableFrom = model.AvailableFrom,
                     AvailableTo = model.AvailableTo,
-                    UserId = userId, // Use UserId instead of DonorId
+                    UserId = userId,
                     TaskSelections = model.SelectedTasks.Select(task => new VolunteeringTaskSelection
                     {
                         TaskDescription = task
-                    }).ToList()
+                    }).ToList(),
                 };
 
                 _context.Volunteerings.Add(volunteeringOpportunity);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Home"); // Redirect after creation
+
+                return RedirectToAction("Index" , "Home");
+            }
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> VolunteersList()
+        {
+            var volunteerList = await _context.Volunteerings
+                .Include(v => v.User) 
+                .Include(v => v.TaskSelections) 
+                .ToListAsync(); 
+
+          
+            var result = volunteerList.Select(v => new VolunteerListViewModel
+            {
+                UserName = v.User.UserName,
+                AvailableFrom = v.AvailableFrom,
+                AvailableTo = v.AvailableTo,
+                Age = (v.User is Donor donor) ? donor.Age : 0,
+                Gender = (v.User is Donor donor1) ? donor1.Gender : null,
+                Address = v.User.Address,
+                FullName = (v.User is Donor donor2) ? donor2.FullName : "",
+                phone = v.User.PhoneNumber,
+                SelectedTasks = v.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList() 
+            }).ToList();
+
+            return View(result); 
+        }
+
+
+        public IActionResult MyVolunteeringOpportunities()
+        {
+            // Get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assumes you're using ASP.NET Identity
+
+            // Retrieve volunteering opportunities associated with the current user
+            var opportunities = _context.Volunteerings
+                .Where(opportunity => opportunity.UserId == userId)
+                .Include(v => v.TaskSelections) // Include TaskSelections for mapping
+                .ToList();
+
+            // Map the volunteering opportunities to VolunteerListViewModel
+            var viewModel = opportunities.Select(opportunity => new VolunteerListViewModel
+            {
+                Id = opportunity.Id,
+                AvailableFrom = opportunity.AvailableFrom,
+                AvailableTo = opportunity.AvailableTo,
+                SelectedTasks = opportunity.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList() // Convert enum to string
+            }).ToList();
+
+            // Pass the mapped view model to the view
+            return View(viewModel); // This is of type IEnumerable<VolunteerListViewModel>
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var volunteeringOpportunity = await _context.Volunteerings
+                .Include(v => v.TaskSelections)
+                .FirstOrDefaultAsync(v => v.Id == id);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (volunteeringOpportunity == null || volunteeringOpportunity.UserId != userId)
+            {
+                return Forbid(); // Return a forbidden response if unauthorized
+            }
+
+            var model = new CreateVolunteeringViewModel
+            {
+                Id = volunteeringOpportunity.Id, // Include the ID for hidden input
+                AvailableFrom = volunteeringOpportunity.AvailableFrom,
+                AvailableTo = volunteeringOpportunity.AvailableTo,
+                SelectedTasks = volunteeringOpportunity.TaskSelections.Select(ts => ts.TaskDescription).ToList()
+            };
+
+            return View(model); // Return the edit view with the model
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CreateVolunteeringViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var volunteeringOpportunity = await _context.Volunteerings
+                    .Include(v => v.TaskSelections) // Include task selections for editing
+                    .FirstOrDefaultAsync(v => v.Id == id);
+
+                // Check if the user is authorized to edit this volunteering opportunity
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (volunteeringOpportunity == null || volunteeringOpportunity.UserId != userId)
+                {
+                    return Forbid(); // Return a forbidden response if unauthorized
+                }
+
+                // Update the properties of the volunteeringOpportunity
+                volunteeringOpportunity.AvailableFrom = model.AvailableFrom;
+                volunteeringOpportunity.AvailableTo = model.AvailableTo;
+
+                // Clear existing task selections and add new ones
+                volunteeringOpportunity.TaskSelections.Clear();
+                volunteeringOpportunity.TaskSelections = model.SelectedTasks.Select(task => new VolunteeringTaskSelection
+                {
+                    TaskDescription = task // Assuming TaskDescription is a string property
+                }).ToList();
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("MyVolunteeringOpportunities"); // Redirect to the list of opportunities
             }
 
             return View(model); // Return the view with the model if validation fails
         }
 
-        public async Task<IActionResult> VolunteersList()
+        [HttpPost]
+        [ValidateAntiForgeryToken] 
+        public async Task<IActionResult> Delete(int id)
         {
-            // Retrieve the data from the database
-            var volunteerList = await _context.Volunteerings
-                .Include(v => v.User) // Include the user details
-                .Include(v => v.TaskSelections) // Include the selected tasks
-                .ToListAsync(); // Load data into memory first
+            var volunteering = await _context.Volunteerings.FindAsync(id);
 
-
-            // Process the data in memory
-            var result = volunteerList.Select(v => new VolunteerListViewModel
+            if (volunteering == null)
             {
-                UserName = v.User.UserName,
-                // Assuming UserName is in ApplicationUser
-                AvailableFrom = v.AvailableFrom,
-                AvailableTo = v.AvailableTo,
-                Age = (v.User is Donor donor) ? donor.Age : 0,
-                Gender = (v.User is Donor donor1) ? donor1.Gender : null,
-                Address = v.User.Address,
-                SelectedTasks = v.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList()
-            }).ToList();
+                return NotFound();
+            }
 
-            return View(result); // Pass the processed data to the view
+            _context.Volunteerings.Remove(volunteering);
+
+            await _context.SaveChangesAsync();
+
+              return RedirectToAction("Index", "Home");
         }
-
 
         public async Task<IActionResult> VolunteersList1(string searchTerm, int? minAge, int? maxAge, string selectedGender)
         {
-            // Retrieve the data from the database
             var volunteerQuery = _context.Volunteerings
-                .Include(v => v.User) // Include user details
-                .Include(v => v.TaskSelections) // Include selected tasks
-                .AsQueryable(); // Start with IQueryable for efficient filtering
+                .Include(v => v.User) 
+                .Include(v => v.TaskSelections) 
+                .AsQueryable(); 
 
-            // Apply filtering based on search terms (if provided)
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 volunteerQuery = volunteerQuery.Where(v =>
-                    v.User.Address.Contains(searchTerm)); // Adjust based on your actual User properties
+                    v.User.Address.Contains(searchTerm)); 
             }
 
-            // Apply filtering based on age range (if provided)
             if (minAge.HasValue || maxAge.HasValue)
             {
                 volunteerQuery = volunteerQuery.Where(v =>
-                    v.User != null && // Check if User is not null
-                    v.User.GetType() == typeof(Donor) && // Ensure it's a Donor
-                    ((Donor)v.User).Age >= (minAge ?? 0) && // Cast and apply min age filter
-                    ((Donor)v.User).Age <= (maxAge ?? int.MaxValue)); // Cast and apply max age filter
+                    v.User != null && 
+                    v.User.GetType() == typeof(Donor) && 
+                    ((Donor)v.User).Age >= (minAge ?? 0) &&
+                    ((Donor)v.User).Age <= (maxAge ?? int.MaxValue));
             }
 
-            // Apply filtering based on selected gender (if provided)
             if (!string.IsNullOrEmpty(selectedGender))
             {
                 volunteerQuery = volunteerQuery.Where(v =>
-                    v.User != null && // Ensure User is not null
-                    v.User.GetType() == typeof(Donor) && // Ensure it's a Donor
-                    ((Donor)v.User).Gender.ToLower() == selectedGender.ToLower()); // Use ToLower() for case-insensitive comparison
+                    v.User != null && 
+                    v.User.GetType() == typeof(Donor) && 
+                    ((Donor)v.User).Gender.ToLower() == selectedGender.ToLower()); 
             }
 
-            // Execute the query and retrieve the list of volunteers
             var volunteerList = await volunteerQuery.ToListAsync();
 
-            // Project to view model
+
             var result = volunteerList.Select(v => new VolunteerListViewModel
             {
                 UserName = v.User.UserName,
@@ -129,14 +222,16 @@ namespace Chartypaltform.Controllers
                 Age = (v.User is Donor donor) ? donor.Age : 0,
                 Gender = (v.User is Donor donor1) ? donor1.Gender : null,
                 Address = v.User.Address,
+                FullName = (v.User is Donor donor2) ? donor2.FullName : "",
+                phone = v.User.PhoneNumber, 
                 SelectedTasks = v.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList()
             }).ToList();
 
             ViewData["MinAge"] = minAge;
             ViewData["MaxAge"] = maxAge;
-            ViewData["SelectedGender"] = selectedGender; // Store selected gender for the view
+            ViewData["SelectedGender"] = selectedGender; 
             return View("VolunteersList", result);
-        }
 
+        }
     }
-} 
+}

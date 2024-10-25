@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Chartypaltform.ViewModels.VolunteerListViewModel>
+
+@{
+    ViewData["Title"] = "My Volunteering Opportunities";
+    ViewBag.ShowHeroSection = true;
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">My Volunteering Opportunities</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Available From</th>
+                <th>Available To</th>
+                <th>Tasks</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No volunteering opportunities available.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var opportunity in Model)
+                {
+                    <tr>
+                        <td>@opportunity.AvailableFrom.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@opportunity.AvailableTo.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            @foreach (var task in opportunity.SelectedTasks)
+                            {
+                                <div>@task</div>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@opportunity.Id" class="btn btn-warning">Edit</a>
+                            <form id="deleteForm" asp-action="Delete" method="post" style="display: inline;">
+                                <input type="hidden" name="id" value="@opportunity.Id" />
+                                <button type="button" class="btn btn-danger" onclick="showConfirmDialog()">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <div id="confirmDialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000;">
+        <p>Are you sure you want to delete this item?</p>
+        <button id="confirmYes" class="btn btn-danger">Yes</button>
+        <button id="confirmNo" class="btn btn-secondary">No</button>
+    </div>
+</div>
+
+<script>
+
+
+    function showConfirmDialog() {
+        document.getElementById('confirmDialog').style.display = 'block';
+        document.getElementById('confirmYes').onclick = function () {
+            document.getElementById('deleteForm').submit(); // Submit the form if confirmed
+        };
+        document.getElementById('confirmNo').onclick = function () {
+            document.getElementById('confirmDialog').style.display = 'none'; // Hide dialog if canceled
+        };
+    }
+</script>

@@ -49,7 +49,8 @@ namespace Chartypaltform.Controllers
                     ComplaintText = complaintVM.ComplaintText,
                     CreatedAt = DateTime.Now,
                     Status = ComplaintStatus.Pending,
-                    UserId = userId // Set the UserId from the logged-in user
+                    UserId = userId ,
+                    Subject = complaintVM.Subject
                 };
 
                 // Add the complaint entity to the database context

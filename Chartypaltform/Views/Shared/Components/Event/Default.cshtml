@@ -1,0 +1,54 @@
+﻿@using System.Security.Claims
+@model IEnumerable<Event>
+
+@if (User.IsInRole("Organization"))
+{
+    <a class="btn btn-primary mt-4" asp-action="Create" asp-controller="Event">
+        Create Event
+    </a>
+}
+                
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 d-flex ftco-animate">
+                    <div class="blog-entry align-self-stretch">
+                        <a href="blog-single.html" class="block-20" style="background-image: url('@item.ImgUrl');">
+                        </a>
+                        <div class="text p-4 d-block">
+                            <div class="meta mb-3">
+                                <div><a href="#">@item.DateCreated</a></div>
+                                <div><a href="#">@item.OrganizationId</a></div>
+                            </div>
+                            <h3 class="heading mb-4"><a href="#">@item.Title</a></h3>
+                            <p class="time-loc"><span class="mr-2"><i class="icon-clock-o"></i> @item.DateCreated</span> <span><i class="icon-map-o"></i> @item.Location</span></p>
+                            <p>@Html.Raw(string.Join(" ", item.Description.Split(' ').Take(6)))</p>
+
+
+                            <p><a asp-action="Details" asp-controller="Event" asp-route-id="@item.Id" title="View Details">View Details <i class="ion-ios-arrow-forward"></i></a></p>
+                            @if (User.IsInRole("Donor"))
+                            {
+                                <form asp-action="Join" method="post" asp-controller="Event" style="display:inline;">
+                                    <input type="hidden" name="eventId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-primary">Join</button>
+                                </form>
+                            } @if (User.IsInRole("Donor") && item.Attendees.Any(a => a.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            {
+                                <form asp-action="Leave" method="post" asp-controller="Event" style="display:inline;">
+                                    <input type="hidden" name="eventId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger">Leave Event</button>
+                                </form>
+                            }
+                           
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        </div>
+    </section>

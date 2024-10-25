@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Chartypaltform.Models.Campaign>
+
+@{
+    ViewData["Title"] = "Campaigns";
+    ViewBag.ShowHeroSection = true;
+
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+
+
+@await Component.InvokeAsync("ListOfCampaign")
+
+
+}

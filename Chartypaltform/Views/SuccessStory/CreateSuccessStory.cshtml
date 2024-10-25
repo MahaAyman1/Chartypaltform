@@ -1,0 +1,50 @@
+﻿@model Chartypaltform.ViewModels.CreateStoryViewModel
+
+@{
+    ViewData["Title"] = "CreateSuccessStory";
+    ViewBag.ShowHeroSection = true;
+}
+
+<h1>Create Success Story</h1>
+
+@if (Model.CompletedCampaigns != null && Model.CompletedCampaigns.Any())
+{
+    <form asp-action="CreateSuccessStory" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Select Campaign</label>
+            <select asp-for="SelectedCampaignId" asp-items="@(new SelectList(Model.CompletedCampaigns, "CampaignId", "CampaignName"))" class="form-control">
+                <option value="">-- Select a Campaign --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Impact</label>
+            <textarea asp-for="Impact" class="form-control"></textarea>
+            <span asp-validation-for="Impact" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Images</label>
+            <input type="file" asp-for="ImageFiles" multiple class="form-control" />
+            <span asp-validation-for="ImageFiles" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Upload PDF</label>
+            <input type="file" asp-for="PdfFile" class="form-control" />
+            <span asp-validation-for="PdfFile" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Success Story</button>
+    </form>
+}
+else
+{
+    <div class="alert alert-warning">No completed campaigns found for this user.</div>
+}

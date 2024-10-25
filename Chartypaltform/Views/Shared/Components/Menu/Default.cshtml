@@ -1,0 +1,9 @@
+﻿@model IEnumerable<Chartypaltform.Models.NavItem>
+
+
+        @foreach (var item in Model)
+        {
+    <li class="nav-item active"><a asp-controller="Home"  asp-action="@item.MenuUrl" class="nav-link">@item.MenuName</a></li>
+
+        }
+
