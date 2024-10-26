@@ -21,8 +21,7 @@
                         </a>
                         <div class="text p-3 p-md-4">
                             <h3>
-                                <a asp-action="Details" asp-controller="Campaign" asp-route-id="@campaign.CampaignId"
-                               >@campaign.CampaignName</a></h3>
+                                <a asp-action="Details" asp-controller="Donation" asp-route-id="@campaign.CampaignId">@campaign.CampaignName</a></h3>
                             <p>@campaign.CampaignDes</p>
                             @{
                                 var progressPercentage = (campaign.CurrentAmountRaised / campaign.GoalAmount) * 100;

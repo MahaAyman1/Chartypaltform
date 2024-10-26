@@ -30,16 +30,9 @@ namespace Chartypaltform.Controllers
 
         public IActionResult Create()
         {
-          /*  var model = new CampaignViewModel
-            {
-                Categories = _context.categories.Select(c => new SelectListItem
-                {
-                    Value = c.CategoryId.ToString(),
-                    Text = c.Name
-                }).ToList()
-            };*/
+         
 
-            return View(/*model*/);
+            return View();
         }
 
         [HttpPost]
@@ -91,42 +84,38 @@ namespace Chartypaltform.Controllers
                     Status = CampaignStatus.Pending,
                     CreatedAt = DateTime.Now,
                     UserId = User.FindFirstValue(ClaimTypes.NameIdentifier), // Get the ID of the logged-in user
-                   // Categories = new List<Category>()
                 };
 
-                // Add selected categories to the campaign
-             /*   foreach (var categoryId in model.SelectedCategoryIds)
-                {
-                    var category = await _context.categories.FindAsync(categoryId);
-                    if (category != null)
-                    {
-                        campaign.Categories.Add(category);
-                    }
-                }*/
-
+              
                 // Save to the database
                 _context.Campaigns.Add(campaign);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            // If model state is invalid, reload the categories and return the view
-        /*    model.Categories = _context.categories.Select(c => new SelectListItem
-            {
-                Value = c.CategoryId.ToString(),
-                Text = c.Name
-            }).ToList();*/
-            return View(/*model*/);
+            return View();
         }
 
         public async Task<IActionResult> Index()
         {
             var campaigns = await _context.Campaigns
-               // .Include(c => c.Categories)
-                .Include(c => c.User) // Include the CharityOrganization details
+                .Include(c => c.User) 
                 .ToListAsync();
 
             return View(campaigns);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var C = await _context.Campaigns
+                .FirstOrDefaultAsync(o => o.CampaignId == id);
+
+            if (C == null)
+            {
+                return NotFound();
+            }
+
+            return View(C);
         }
     }
 }

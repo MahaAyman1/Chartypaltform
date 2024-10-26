@@ -27,8 +27,30 @@ namespace Chartypaltform.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<SuccessCampaign> successCampaigns { get; set; }
         public DbSet<NavItem> navItems { get; set; }    
+        public DbSet<Donation> donations { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Donation>()
+                .HasOne(d => d.Campaign)
+                .WithMany(c => c.Donations)
+                .HasForeignKey(d => d.CampaignId)
+                .OnDelete(DeleteBehavior.Restrict);  
+
+            modelBuilder.Entity<Donation>()
+                .HasOne(d => d.Donor)
+                .WithMany(donor => donor.Donations)
+                .HasForeignKey(d => d.DonorId)
+                .OnDelete(DeleteBehavior.Restrict);  
+
+            modelBuilder.Entity<Campaign>()
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);  
+        }
 
 
 
