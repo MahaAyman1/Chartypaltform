@@ -40,12 +40,13 @@ namespace Chartypaltform.Models
         public virtual CharityOrganization User { get; set; }
 		public ICollection<SuccessCampaign> SuccessCampaigns { get; set; }
 
+        public virtual ICollection<Donation> Donations { get; set; }
 
 
-	}
+    }
 
 
-	public enum CampaignStatus
+    public enum CampaignStatus
 	{
 		Pending, // Default
 		Active,

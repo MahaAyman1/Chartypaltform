@@ -12,7 +12,8 @@ using Chartypaltform.Service;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Collections.Generic;
-
+using Chartypaltform.Services;
+using System.Linq;
 namespace Chartypaltform.Controllers
 {
     public class CampaignController : Controller
@@ -30,16 +31,9 @@ namespace Chartypaltform.Controllers
 
         public IActionResult Create()
         {
-          /*  var model = new CampaignViewModel
-            {
-                Categories = _context.categories.Select(c => new SelectListItem
-                {
-                    Value = c.CategoryId.ToString(),
-                    Text = c.Name
-                }).ToList()
-            };*/
+         
 
-            return View(/*model*/);
+            return View();
         }
 
         [HttpPost]
@@ -91,42 +85,71 @@ namespace Chartypaltform.Controllers
                     Status = CampaignStatus.Pending,
                     CreatedAt = DateTime.Now,
                     UserId = User.FindFirstValue(ClaimTypes.NameIdentifier), // Get the ID of the logged-in user
-                   // Categories = new List<Category>()
                 };
 
-                // Add selected categories to the campaign
-             /*   foreach (var categoryId in model.SelectedCategoryIds)
-                {
-                    var category = await _context.categories.FindAsync(categoryId);
-                    if (category != null)
-                    {
-                        campaign.Categories.Add(category);
-                    }
-                }*/
-
+              
                 // Save to the database
                 _context.Campaigns.Add(campaign);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            // If model state is invalid, reload the categories and return the view
-        /*    model.Categories = _context.categories.Select(c => new SelectListItem
-            {
-                Value = c.CategoryId.ToString(),
-                Text = c.Name
-            }).ToList();*/
-            return View(/*model*/);
+            return View();
         }
 
         public async Task<IActionResult> Index()
         {
             var campaigns = await _context.Campaigns
-               // .Include(c => c.Categories)
-                .Include(c => c.User) // Include the CharityOrganization details
+                .Include(c => c.User) 
                 .ToListAsync();
 
             return View(campaigns);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var C = await _context.Campaigns
+                .FirstOrDefaultAsync(o => o.CampaignId == id);
+
+            if (C == null)
+            {
+                return NotFound();
+            }
+
+            return View(C);
+        }
+
+        public IActionResult GenerateCampaignsPDF()
+        {
+            var campaigns = _context.Campaigns.ToList();
+
+            if (campaigns == null || !campaigns.Any())
+            {
+                return NotFound("No campaigns available.");
+            }
+
+            try
+            {
+                PDFService pdfService = new PDFService();
+                var pdfFile = pdfService.GenerateCampaignsPDF(campaigns);
+
+                return File(pdfFile, "application/pdf", "Campaigns.pdf");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it accordingly
+                return BadRequest("Error generating PDF: " + ex.Message);
+            }
+        }
+
+        public IActionResult DownloadPDF()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PDFs", "Campaigns.pdf");
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("PDF file not found.");
+            }
+            return PhysicalFile(filePath, "application/pdf", "Campaigns.pdf");
         }
     }
 }
