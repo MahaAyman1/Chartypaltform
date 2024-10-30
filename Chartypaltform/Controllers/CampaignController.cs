@@ -12,7 +12,8 @@ using Chartypaltform.Service;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Collections.Generic;
-
+using Chartypaltform.Services;
+using System.Linq;
 namespace Chartypaltform.Controllers
 {
     public class CampaignController : Controller
@@ -116,6 +117,39 @@ namespace Chartypaltform.Controllers
             }
 
             return View(C);
+        }
+
+        public IActionResult GenerateCampaignsPDF()
+        {
+            var campaigns = _context.Campaigns.ToList();
+
+            if (campaigns == null || !campaigns.Any())
+            {
+                return NotFound("No campaigns available.");
+            }
+
+            try
+            {
+                PDFService pdfService = new PDFService();
+                var pdfFile = pdfService.GenerateCampaignsPDF(campaigns);
+
+                return File(pdfFile, "application/pdf", "Campaigns.pdf");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it accordingly
+                return BadRequest("Error generating PDF: " + ex.Message);
+            }
+        }
+
+        public IActionResult DownloadPDF()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PDFs", "Campaigns.pdf");
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("PDF file not found.");
+            }
+            return PhysicalFile(filePath, "application/pdf", "Campaigns.pdf");
         }
     }
 }
