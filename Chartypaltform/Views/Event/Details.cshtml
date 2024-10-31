@@ -5,37 +5,64 @@
     ViewBag.ShowHeroSection = true;
 }
 
+<div class="container mt-4">
+    <div class="text-center">
+        <h2 class="mb-3">@Model.Title</h2>
+        <p class="lead text-muted">@Model.Description</p>
+    </div>
 
-<h2>@Model.Title</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5><strong>Location:</strong></h5>
+            <p>@Model.Location</p>
+        </div>
+        <div class="col-md-6">
+            <h5><strong>Event Date:</strong></h5>
+            <p>@Model.EventDate.ToShortDateString()</p>
+            <h5><strong>Max Participants:</strong></h5>
+            <p>@Model.MaxParticipants</p>
+        </div>
+    </div>
 
-<p>@Model.Description</p>
-<p><strong>Location:</strong> @Model.Location</p>
-<p><strong>Event Date:</strong> @Model.EventDate.ToShortDateString()</p>
-<p><strong>Max Participants:</strong> @Model.MaxParticipants</p>
+    <div class="text-center mb-4">
+        <a href="@Model.LocationUrl" class="btn btn-primary" target="_blank">View Location on Google Maps</a>
+    </div>
 
-<!-- Button to open Google Maps link -->
-<a href="@Model.LocationUrl" class="btn btn-info" target="_blank">View Location on Google Maps</a>
+    <h3 class="mt-5 text-center">Attendees</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.DonorEvents != null && Model.DonorEvents.Any())
+            {
+                foreach (var donorEvent in Model.DonorEvents)
+                {
+                    var donor = donorEvent.Donor;
+                    <tr>
+                        <td><img src="@donor.Img" alt="@donor.FullName" class="rounded-circle" style="width: 50px; height: 50px;" /></td>
+                        <td><strong>@donor.FullName</strong></td>
+                        <td>@donor.Age years old, @donor.Gender</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">No attendees yet.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
-@if (User.IsInRole("Donor"))
-{
-    <form asp-action="Join" method="post">
-        <input type="hidden" name="eventId" value="@Model.Id" />
-        <button type="submit" class="btn btn-success">Join Event</button>
-    </form>
-}
-
-<h3>Attendees</h3>
-<ul>
-    @if (Model.Attendees != null && Model.Attendees.Any())
-    {
-        foreach (var attendee in Model.Attendees)
-        {
-            <li>@attendee.FullName ,@attendee.Img , @attendee.Age , @attendee.Email , @attendee.Gender  </li>
-            
-        }
+<style>
+    .lead {
+        font-size: 1.2rem;
+        color: #6c757d; /* Bootstrap text-muted color */
     }
-    else
-    {
-        <li>No attendees yet.</li>
-    }
-</ul>
+</style>

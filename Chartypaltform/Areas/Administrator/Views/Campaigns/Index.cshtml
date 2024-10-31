@@ -4,39 +4,52 @@
     ViewData["Title"] = "Campaigns";
 }
 
-<h1>Campaigns</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Campaign Name</th>
-            <th>Current Amount Raised</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var campaign in Model)
-        {
-            <tr>
-                <td>@campaign.CampaignName</td>
-                <td>@campaign.CurrentAmountRaised</td>
-                <td>@campaign.Status</td>
-                <td>
-                    <form asp-area="Administrator" asp-controller="Campaigns" asp-action="UpdateStatus" method="post" style="display:inline;">
-                        <input type="hidden" name="campaignId" value="@campaign.CampaignId" />
-                        <select name="status">
-                            <option value="@Chartypaltform.Models.CampaignStatus.Active" )>Open</option>
-                            <option value="@Chartypaltform.Models.CampaignStatus.Closed" )>Closed</option>
-                            <option value="@Chartypaltform.Models.CampaignStatus.Pending")>Pending</option>
-                            <option value="@Chartypaltform.Models.CampaignStatus.Completed" )>Completed</option>
-                        </select>
-                        <input type="text" name="reason" placeholder="Reason for status change" required />
-                        <button type="submit" class="btn btn-primary">Update Status</button>
-                    </form>
-                    <a asp-area="Administrator" asp-controller="Campaigns" asp-action="Details" asp-route-id="@campaign.CampaignId" class="btn btn-warning">Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<form method="post" asp-action="Export" asp-controller="Campaigns">
+    <input type="submit" id="btnSubmit" value=" Export Campaigns" />
+</form>
+
+
+
+<div class="container mt-4">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead >
+                <tr>
+                    <th>Campaign Name</th>
+                    <th>Current Amount Raised</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+               
+            <tbody>
+                @foreach (var campaign in Model)
+                {
+                    <tr>
+                        <td>@campaign.CampaignName</td>
+                        <td>@String.Format("{0:C}", campaign.CurrentAmountRaised)</td>
+                        <td>@campaign.Status</td>
+                        <td>
+                            <form asp-area="Administrator" asp-controller="Campaigns" asp-action="UpdateStatus" method="post" class="d-inline">
+                                <input type="hidden" name="campaignId" value="@campaign.CampaignId" />
+                                <div class="input-group mb-2">
+                                    <select name="status" class="form-select">
+                                        <option value="@Chartypaltform.Models.CampaignStatus.Active">Open</option>
+                                        <option value="@Chartypaltform.Models.CampaignStatus.Closed">Closed</option>
+                                        <option value="@Chartypaltform.Models.CampaignStatus.Pending">Pending</option>
+                                        <option value="@Chartypaltform.Models.CampaignStatus.Completed">Completed</option>
+                                    </select>
+                                    <input type="text" name="reason" class="form-control" placeholder="Reason for status change" required style="height: 50px; font-size: 16px;" />
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                            <a asp-area="Administrator" asp-controller="Campaigns" asp-action="Details" asp-route-id="@campaign.CampaignId" class="btn btn-warning">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

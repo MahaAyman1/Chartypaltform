@@ -1,7 +1,10 @@
 ﻿
 @{
     ViewData["Title"] = "About";
+    ViewBag.ShowHeroSection = true;
+
 }
 
-<h1>About</h1>
 
+
+@await Component.InvokeAsync("Donation")

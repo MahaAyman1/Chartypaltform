@@ -45,7 +45,8 @@ namespace Chartypaltform.Models
 
         public string OrganizationId { get; set; }
        
-        // List of donors who joined
-        public virtual ICollection<Donor> Attendees { get; set; } = new List<Donor>();
+        public virtual ICollection<DonorEvent> DonorEvents { get; set; } = new List<DonorEvent>();
+
+
     }
 }

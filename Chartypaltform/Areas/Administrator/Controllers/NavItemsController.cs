@@ -61,9 +61,14 @@ namespace Chartypaltform.Areas.Administrator.Controllers
             {
                 _context.Add(navItem);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+				TempData["success"] = "NavItem created successfully.";
+
+				return RedirectToAction(nameof(Index));
             }
-            return View(navItem);
+			TempData["error"] = "Failed to create NavItem. Please check the details.";
+
+			return View(navItem);
         }
 
         // GET: Administrator/NavItems/Edit/5
@@ -112,9 +117,13 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+				TempData["success"] = "NavItem Update successfully.";
+
+				return RedirectToAction(nameof(Index));
             }
-            return View(navItem);
+			TempData["error"] = "Failed to Update NavItem. Please check the details.";
+
+			return View(navItem);
         }
 
         // GET: Administrator/NavItems/Delete/5
@@ -145,8 +154,9 @@ namespace Chartypaltform.Areas.Administrator.Controllers
             {
                 _context.navItems.Remove(navItem);
             }
+			TempData["success"] = "NavItem Delete successfully.";
 
-            await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

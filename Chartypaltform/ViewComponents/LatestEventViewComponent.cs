@@ -15,7 +15,8 @@ namespace Chartypaltform.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var events = await _db.Events.Include(e => e.Attendees).OrderByDescending(e => e.EventDate).Take(3)
+            var events = await _db.Events.Include(e => e.DonorEvents)
+                .ThenInclude(de => de.Donor).OrderByDescending(e => e.EventDate).Take(3)
         .ToListAsync();
             return View(events);
         }

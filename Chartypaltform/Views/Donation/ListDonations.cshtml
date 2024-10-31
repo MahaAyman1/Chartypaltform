@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Chartypaltform.ViewModels.DonationViewModel>
+
+@{
+    ViewData["Title"] = "ListDonations";
+}
+
+
+
+
+<h2>Donations List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Donation ID</th>
+            <th>Amount</th>
+            <th>Donor Name</th>
+            <th>Campaign Name</th>
+            <th>Donation Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var donation in Model)
+        {
+            <tr>
+                <td>@donation.DonationId</td>
+                <td>@donation.Amount</td>
+                <td>@donation.DonorName</td>
+                <td>@donation.CampaignName</td>
+                <td>@donation.DonationDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

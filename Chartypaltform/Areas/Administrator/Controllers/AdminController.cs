@@ -41,7 +41,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 return View(model);
             }
 
-            // Check if an account with this email already exists
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
@@ -49,7 +48,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 return View(model);
             }
 
-            // Create new admin user
             var newAdminUser = new AdminUser
             {
                 UserName = model.Email,
@@ -58,13 +56,11 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 Address = model.Address,
                 PhoneNumber = model.PhoneNumber,
                 RegisteredAt = DateTime.UtcNow,
-                Img = "default_image.png" // Use a clear placeholder
+                Img = "default_image.png" 
             };
 
-            // Ensure the "Admin" role exists
             await EnsureRoleExists("Admin");
 
-            // Create the new admin user with specified password
             var result = await _userManager.CreateAsync(newAdminUser, model.Password);
             if (!result.Succeeded)
             {
@@ -75,7 +71,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 return View(model);
             }
 
-            // Assign the new user to the "Admin" role and sign them in
             await _userManager.AddToRoleAsync(newAdminUser, "Admin");
 
   
@@ -89,7 +84,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 return View(model);
             }
 
-            // Record the admin creation action in the database
             var adminAction = new AdminAction
             {
                 ActionType = ActionType.CreateAdmin,

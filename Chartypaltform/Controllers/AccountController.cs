@@ -316,49 +316,7 @@ namespace Chartypaltform.Controllers
         {
             return View();
         }
-        /* [HttpPost]
-         [ValidateAntiForgeryToken]
-         [AllowAnonymous]
-         public async Task<IActionResult> Login(LoginViewModel model)
-         {
-             if (ModelState.IsValid)
-             {
-                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                 if (result.Succeeded)
-                 {
-                     var user = await _userManager.FindByEmailAsync(model.Email);
-
-                     if (await _userManager.IsInRoleAsync(user, "Donor"))
-                     {
-                         return RedirectToAction("Index", "Home");
-                     }
-                     else if (await _userManager.IsInRoleAsync(user, "Organization"))
-                     {
-                         // Cast to CharityOrganization to access RegistrationStatus
-                         var organizationUser = user as CharityOrganization;
-                         if (organizationUser != null && organizationUser.registration_status == RegistrationStatus.Approved)
-                         {
-                             return RedirectToAction("Index", "Home");
-                         }
-                         else
-                         {
-                             ModelState.AddModelError(string.Empty, "Your organization status is not approved.");
-                         }
-                     }
-                     else if (await _userManager.IsInRoleAsync(user, "Admin"))
-                     {
-                         return RedirectToAction("Index", "Cpanel", new { area = "Administrator" });
-                     }
-
-                     return RedirectToAction("Index", "Home");
-                 }
-
-                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-             }
-             return View(model);
-         }
-
-         */
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]

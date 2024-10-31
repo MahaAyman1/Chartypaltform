@@ -32,7 +32,7 @@
                                     <input type="hidden" name="eventId" value="@item.Id" />
                                     <button type="submit" class="btn btn-primary">Join</button>
                                 </form>
-                            } @if (User.IsInRole("Donor") && item.Attendees.Any(a => a.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            } @if (User.IsInRole("Donor") && item.DonorEvents.Any(de => de.DonorId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {
                                 <form asp-action="Leave" method="post" asp-controller="Event" style="display:inline;">
                                     <input type="hidden" name="eventId" value="@item.Id" />

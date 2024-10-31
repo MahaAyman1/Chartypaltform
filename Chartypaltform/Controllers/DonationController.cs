@@ -1,5 +1,6 @@
 ﻿using Chartypaltform.Data;
 using Chartypaltform.Models;
+using Chartypaltform.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -175,9 +176,27 @@ namespace Chartypaltform.Controllers
           }
 
 
-    
+        public async Task<IActionResult> ListDonations()
+        {
+            var donations = await _context.donations
+                .Include(d => d.Donor)
+                .Include(d => d.Campaign)
+                .Select(d => new DonationViewModel
+                {
+                    DonationId = d.DonationId,
+                    Amount = d.Amount,
+                    DonorName = d.Donor.FullName, // Assuming the Donor model has a Name property
+                    CampaignName = d.Campaign.CampaignName, // Assuming the Campaign model has a Name property
+                    DonationDate = d.DonationDate,
+                    img = d.Donor.Img,
+                })
+                .ToListAsync();
 
-      
+            return View(donations);
+        }
+
+
+
 
 
     }

@@ -4,14 +4,23 @@
     ViewData["Title"] = "Pending Charity Organizations";
 }
 
-<h2>Pending Charity Organizations</h2>
+
+<form method="post" asp-action="ExportCharityOrganizations" asp-controller="Campaigns">
+    <input type="submit" id="btnSubmit" value="Export Charity Organizations" />
+</form>
+
+
+
+
+
+<h2>Charity Organizations</h2>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Organization Name</th>
             <th>Registration Status</th>
-            <th>Created At</th>
+            <th>Email</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,16 +32,19 @@
                 <tr>
                     <td>@org.OrganizationName</td>
                     <td>@org.registration_status</td>
-                    <td>@org.CreatedAT?.ToString("yyyy-MM-dd")</td>
+                    <td>@org.Email</td>
                     <td>
                         <form asp-action="ApproveOrganization" method="post" class="d-inline">
                             <input type="hidden" name="id" value="@org.Id" />
+                            <input type="text" name="reason" placeholder="Reason for approval" required />
                             <button type="submit" class="btn btn-success">Approve</button>
                         </form>
                         <form asp-action="RejectOrganization" method="post" class="d-inline">
                             <input type="hidden" name="id" value="@org.Id" />
+                            <input type="text" name="reason" placeholder="Reason for rejection" required />
                             <button type="submit" class="btn btn-danger">Reject</button>
                         </form>
+                        <a asp-action="Details" asp-controller="Organization" asp-route-id="@org.Id" class="btn btn-info">Details</a>
                     </td>
                 </tr>
             }
@@ -40,7 +52,7 @@
         else
         {
             <tr>
-                <td colspan="4" class="text-center">No pending organizations found.</td>
+                <td colspan="5" class="text-center">No pending organizations found.</td>
             </tr>
         }
     </tbody>

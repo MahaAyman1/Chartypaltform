@@ -83,27 +83,75 @@ namespace Chartypaltform.Controllers
             if (user is Donor donor)
             {
                 var eventModel = await _context.Events
-                    .Include(e => e.Attendees)
+                    .Include(e => e.DonorEvents)
                     .FirstOrDefaultAsync(e => e.Id == eventId);
 
-                if (eventModel == null || eventModel.Attendees.Count >= eventModel.MaxParticipants)
+                if (eventModel == null)
                 {
-                    return BadRequest("Event is full or not found.");
+                    return View("Errors", "Event not found.");
+                }
+                if (eventModel.DonorEvents.Count >= eventModel.MaxParticipants)
+                {
+                    return View("Errors", "Event is full.");
                 }
 
-                if (!eventModel.Attendees.Any(a => a.Id == donor.Id)) // Ensure donor is not already attending
+                if (!eventModel.DonorEvents.Any(de => de.DonorId == donor.Id))
                 {
-                    eventModel.Attendees.Add(donor);
+                    var donorEvent = new DonorEvent
+                    {
+                        DonorId = donor.Id,
+                        EventId = eventModel.Id
+                    };
+
+                    eventModel.DonorEvents.Add(donorEvent);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction("Index"); // Redirect to event list after joining
+                    return RedirectToAction("Event" , "Home"); 
                 }
 
-                return BadRequest("You have already joined this event.");
+                return View("Errors", "You have already joined this event.");
             }
 
             return Unauthorized();
         }
+
+
+        /* [HttpPost]
+         [ValidateAntiForgeryToken]
+         public async Task<IActionResult> Join(int eventId)
+         {
+             var user = await _userManager.GetUserAsync(User);
+
+             if (user is Donor donor)
+             {
+                 var eventModel = await _context.Events
+                     .Include(e => e.DonorEvents)
+                     .FirstOrDefaultAsync(e => e.Id == eventId);
+
+                 if (eventModel == null || eventModel.DonorEvents.Count >= eventModel.MaxParticipants)
+                 {
+                     return BadRequest("Event is full or not found.");
+                 }
+
+                 if (!eventModel.DonorEvents.Any(de => de.DonorId == donor.Id)) // Ensure donor is not already attending
+                 {
+                     var donorEvent = new DonorEvent
+                     {
+                         DonorId = donor.Id,
+                         EventId = eventModel.Id
+                     };
+
+                     eventModel.DonorEvents.Add(donorEvent);
+                     await _context.SaveChangesAsync();
+
+                     return RedirectToAction("Index"); // Redirect to event list after joining
+                 }
+
+                 return BadRequest("You have already joined this event.");
+             }
+
+             return Unauthorized();
+         }*/
 
         public async Task<IActionResult> Index()
         {
@@ -113,11 +161,12 @@ namespace Chartypaltform.Controllers
             return View(events);
         }
 
-        // GET: Events/Details/5
+       
         public async Task<IActionResult> Details(int id)
         {
             var eventItem = await _context.Events
-                .Include(e => e.Attendees) 
+                .Include(e => e.DonorEvents) 
+                    .ThenInclude(de => de.Donor) 
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (eventItem == null)
@@ -127,38 +176,7 @@ namespace Chartypaltform.Controllers
 
             return View(eventItem);
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Leave(int eventId)
-        {
-            var user = await _userManager.GetUserAsync(User);
 
-            if (user is Donor donor)
-            {
-                var eventModel = await _context.Events
-                    .Include(e => e.Attendees)
-                    .FirstOrDefaultAsync(e => e.Id == eventId);
-
-                if (eventModel == null)
-                {
-                    return NotFound("Event not found.");
-                }
-
-                // Find the donor in the event's attendees
-                var attendee = eventModel.Attendees.FirstOrDefault(a => a.Id == donor.Id);
-                if (attendee != null)
-                {
-                    eventModel.Attendees.Remove(attendee); // Remove the donor from this event
-                    await _context.SaveChangesAsync(); // Save changes to the database
-
-                    return RedirectToAction("Index"); // Redirect after leaving
-                }
-
-                return BadRequest("You are not attending this event.");
-            }
-
-            return Unauthorized();
-        }
         private async Task RemovePastEvents()
         {
             var pastEvents = await _context.Events
@@ -171,19 +189,7 @@ namespace Chartypaltform.Controllers
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task<IActionResult> Attendees(int eventId)
-        {
-            var eventModel = await _context.Events
-                .Include(e => e.Attendees)
-                .FirstOrDefaultAsync(e => e.Id == eventId);
-
-            if (eventModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(eventModel.Attendees.ToList());
-        }
+   
         private async Task<string> HandleFileUpload(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -206,6 +212,48 @@ namespace Chartypaltform.Controllers
             }
 
             return "/uploads/" + uniqueFileName;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Leave(int eventId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is Donor donor)
+            {
+                var donorEvent = await _context.DonorEvents
+                    .FirstOrDefaultAsync(de => de.EventId == eventId && de.DonorId == donor.Id);
+
+                if (donorEvent != null)
+                {
+                    _context.DonorEvents.Remove(donorEvent); // Remove the donor from this event
+                    await _context.SaveChangesAsync(); // Save changes to the database
+
+                    return RedirectToAction("Index"); // Redirect after leaving
+                }
+
+                return BadRequest("You are not attending this event.");
+            }
+
+            return Unauthorized();
+        }
+
+        public async Task<IActionResult> Attendees(int eventId)
+        {
+            var eventModel = await _context.Events
+                .Include(e => e.DonorEvents)
+                    .ThenInclude(de => de.Donor) // Include donor details
+                .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (eventModel == null)
+            {
+                return NotFound();
+            }
+
+            var attendees = eventModel.DonorEvents.Select(de => de.Donor).ToList(); // Get all donors attending the event
+
+            return View(attendees);
         }
 
 
