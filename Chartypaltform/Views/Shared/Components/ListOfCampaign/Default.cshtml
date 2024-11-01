@@ -6,7 +6,7 @@
 @if (User.IsInRole("Organization"))
 {
     <a class="btn btn-primary mt-4" asp-action="Create" asp-controller="Campaign">
-        Create Event
+        Create Campaign
     </a>
 }
 
@@ -22,7 +22,7 @@
                         <div class="text p-3 p-md-4">
                             <h3>
                                 <a asp-action="Details" asp-controller="Donation" asp-route-id="@campaign.CampaignId">@campaign.CampaignName</a></h3>
-                            <p>@campaign.CampaignDes</p>
+                            <p class="campaign-description">@campaign.CampaignDes</p>
                             @{
                                 var progressPercentage = (campaign.CurrentAmountRaised / campaign.GoalAmount) * 100;
                             }
@@ -40,3 +40,12 @@
     </div>
 </section>
 
+<style>
+    .campaign-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

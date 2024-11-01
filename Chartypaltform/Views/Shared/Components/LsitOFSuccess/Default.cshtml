@@ -12,7 +12,7 @@
         <div class="row d-flex">
             @foreach (var success in Model)
             {
-                if (success?.Campaign != null) 
+                if (success?.Campaign != null)
                 {
                     <div class="col-md-4 d-flex ftco-animate">
                         <div class="blog-entry align-self-stretch">
@@ -20,17 +20,18 @@
                             </a>
                             <div class="text p-4 d-block">
                                 <div class="meta mb-3">
-                                    <div>@success.DateCreated</div>
+                                    
                                     <div>
-
-                                        <a asp-action="Details" asp-controller="Organization" asp-route-id="@success.Campaign.UserId"> @success.Campaign.User?.UserName.</a>
-                                        
+                                        <a asp-action="Details" asp-controller="Organization" asp-route-id="@success.Campaign.UserId">@success.Campaign.User?.OrganizationName</a>
                                     </div>
                                 </div>
-                                <h3   class="heading mt-3">
+                                <div>@success.DateCreated</div>
+                                <h3 class="heading mt-3">
                                     <a asp-action="Details" asp-controller="SuccessStory" asp-route-id="@success.Id">@success.title</a>
                                 </h3>
-                                <p>@success.impact</p>
+                                <p style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                                    @success.impact
+                                </p>
                             </div>
                         </div>
                     </div>

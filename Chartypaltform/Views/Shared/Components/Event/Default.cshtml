@@ -21,7 +21,7 @@
                         <div class="text p-4 d-block">
                             <div class="meta mb-3">
                                 <div><a href="#">@item.DateCreated</a></div>
-                                <div><a href="#">@item.OrganizationId</a></div>
+                                <div><a asp-action="Details" asp-controller="Organization" asp-route-id="@item.OrganizationId">Event Planner <i class="ion-ios-arrow-forward"></i></a></div>
                             </div>
                             <h3 class="heading mb-4"><a href="#">@item.Title</a></h3>
                             <p class="time-loc"><span class="mr-2"><i class="icon-clock-o"></i> @item.DateCreated</span> <span><i class="icon-map-o"></i> @item.Location</span></p>
@@ -35,14 +35,15 @@
                                     <input type="hidden" name="eventId" value="@item.Id" />
                                     <button type="submit" class="btn btn-primary">Join</button>
                                 </form>
-                            } @if (User.IsInRole("Donor") && item.Attendees.Any(a => a.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            } @if (User.IsInRole("Donor") && item.DonorEvents.Any(de => de.DonorId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {
                                 <form asp-action="Leave" method="post" asp-controller="Event" style="display:inline;">
                                     <input type="hidden" name="eventId" value="@item.Id" />
                                     <button type="submit" class="btn btn-danger">Leave Event</button>
                                 </form>
                             }
-                           
+
+
                         </div>
                     </div>
                 </div>

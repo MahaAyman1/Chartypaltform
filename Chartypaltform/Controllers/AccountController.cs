@@ -1,12 +1,15 @@
-﻿using Chartypaltform.Models;
+﻿using Chartypaltform.Data;
+using Chartypaltform.Models;
 using Chartypaltform.Service;
 using Chartypaltform.ViewModels;
+using iText.Commons.Actions.Contexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Chartypaltform.Controllers
 {
@@ -17,14 +20,16 @@ namespace Chartypaltform.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
-            RoleManager<IdentityRole> roleManager, IWebHostEnvironment hostEnvironment)
+            RoleManager<IdentityRole> roleManager, IWebHostEnvironment hostEnvironment, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _webHostEnvironment = hostEnvironment; 
+            _context = context; 
         }
 
         [AllowAnonymous]
@@ -102,7 +107,7 @@ namespace Chartypaltform.Controllers
             return View(model);
         }
         [HttpGet]
-
+        [AllowAnonymous]
         public IActionResult DonorRegister()
         {
             return View();
@@ -110,6 +115,7 @@ namespace Chartypaltform.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> DonorRegister(DonorRegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -168,79 +174,8 @@ namespace Chartypaltform.Controllers
             }
             return View(model);
         }
-        [HttpGet]
-        public IActionResult LoginOrganization()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-
-        public async Task<IActionResult> LoginOrganization(LoginViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
-            return View(model);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-
-        public IActionResult LoginDonor()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-
-        public async Task<IActionResult> LoginDonor(LoginViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                 
-                }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
-            return View(model);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult LoginAdmin()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> LoginAdmin(LoginViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Cpanel", new { area = "Administrator" });
-                }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
-            return View(model);
-        }
+      
+      
        
         [HttpGet]
         [AllowAnonymous]
@@ -316,49 +251,7 @@ namespace Chartypaltform.Controllers
         {
             return View();
         }
-        /* [HttpPost]
-         [ValidateAntiForgeryToken]
-         [AllowAnonymous]
-         public async Task<IActionResult> Login(LoginViewModel model)
-         {
-             if (ModelState.IsValid)
-             {
-                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                 if (result.Succeeded)
-                 {
-                     var user = await _userManager.FindByEmailAsync(model.Email);
-
-                     if (await _userManager.IsInRoleAsync(user, "Donor"))
-                     {
-                         return RedirectToAction("Index", "Home");
-                     }
-                     else if (await _userManager.IsInRoleAsync(user, "Organization"))
-                     {
-                         // Cast to CharityOrganization to access RegistrationStatus
-                         var organizationUser = user as CharityOrganization;
-                         if (organizationUser != null && organizationUser.registration_status == RegistrationStatus.Approved)
-                         {
-                             return RedirectToAction("Index", "Home");
-                         }
-                         else
-                         {
-                             ModelState.AddModelError(string.Empty, "Your organization status is not approved.");
-                         }
-                     }
-                     else if (await _userManager.IsInRoleAsync(user, "Admin"))
-                     {
-                         return RedirectToAction("Index", "Cpanel", new { area = "Administrator" });
-                     }
-
-                     return RedirectToAction("Index", "Home");
-                 }
-
-                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-             }
-             return View(model);
-         }
-
-         */
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -377,15 +270,12 @@ namespace Chartypaltform.Controllers
                         return View(model);
                     }
 
-                    // Check if the user is in the "Donor" role
                     if (await _userManager.IsInRoleAsync(user, "Donor"))
                     {
                         return RedirectToAction("Index", "Home");
                     }
-                    // Check if the user is in the "Organization" role
                     else if (await _userManager.IsInRoleAsync(user, "Organization"))
                     {
-                        // Cast to CharityOrganization to access RegistrationStatus
                         var organizationUser = user as CharityOrganization;
                         if (organizationUser != null)
                         {
@@ -395,30 +285,96 @@ namespace Chartypaltform.Controllers
                             }
                             else if (organizationUser.registration_status == RegistrationStatus.Pending)
                             {
-                                // Reject login for pending status
                                 ModelState.AddModelError(string.Empty, "Your organization status is pending. Please wait for approval.");
                             }
                             else if (organizationUser.registration_status == RegistrationStatus.Rejected)
                             {
-                                // Reject login for rejected status
                                 ModelState.AddModelError(string.Empty, "Your organization has been rejected. Contact support for more information.");
                             }
                         }
                     }
-                    // Check if the user is in the "Admin" role
                     else if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
                         return RedirectToAction("Index", "Cpanel", new { area = "Administrator" });
                     }
                 }
 
-                // If we reach this point, the login was not successful
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
             return View(model);
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null && user.PhoneNumber == model.PhoneNumber)
+                {
+                    return RedirectToAction("ResetPassword", new { email = model.Email });
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid email or phone number.");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email)
+        {
+            var model = new ResetPasswordViewModel
+            {
+                Email = email 
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var result = await _userManager.RemovePasswordAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Login", "Account");
+                        }
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid email.");
+                }
+            }
+            return View(model);
+        }
+
+
+     
 
     }
 }

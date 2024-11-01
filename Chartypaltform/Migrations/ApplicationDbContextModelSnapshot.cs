@@ -276,6 +276,30 @@ namespace Chartypaltform.Migrations
                     b.ToTable("donations");
                 });
 
+            modelBuilder.Entity("Chartypaltform.Models.DonorEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DonorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DonorId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("DonorEvents");
+                });
+
             modelBuilder.Entity("Chartypaltform.Models.Event", b =>
                 {
                     b.Property<int>("Id")
@@ -285,9 +309,6 @@ namespace Chartypaltform.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
@@ -325,8 +346,6 @@ namespace Chartypaltform.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId1");
 
                     b.ToTable("Events");
                 });
@@ -623,9 +642,6 @@ namespace Chartypaltform.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EventId")
-                        .HasColumnType("int");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -633,8 +649,6 @@ namespace Chartypaltform.Migrations
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("EventId");
 
                     b.HasDiscriminator().HasValue("Donor");
                 });
@@ -689,15 +703,30 @@ namespace Chartypaltform.Migrations
                     b.Navigation("Donor");
                 });
 
+            modelBuilder.Entity("Chartypaltform.Models.DonorEvent", b =>
+                {
+                    b.HasOne("Chartypaltform.Models.Donor", "Donor")
+                        .WithMany("DonorEvents")
+                        .HasForeignKey("DonorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chartypaltform.Models.Event", "Event")
+                        .WithMany("DonorEvents")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Donor");
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("Chartypaltform.Models.Event", b =>
                 {
                     b.HasOne("Chartypaltform.Models.ApplicationUser", null)
                         .WithMany("CreatedEvents")
                         .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("Chartypaltform.Models.ApplicationUser", null)
-                        .WithMany("JoinedEvents")
-                        .HasForeignKey("ApplicationUserId1");
                 });
 
             modelBuilder.Entity("Chartypaltform.Models.SuccessCampaign", b =>
@@ -784,18 +813,9 @@ namespace Chartypaltform.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chartypaltform.Models.Donor", b =>
-                {
-                    b.HasOne("Chartypaltform.Models.Event", null)
-                        .WithMany("Attendees")
-                        .HasForeignKey("EventId");
-                });
-
             modelBuilder.Entity("Chartypaltform.Models.ApplicationUser", b =>
                 {
                     b.Navigation("CreatedEvents");
-
-                    b.Navigation("JoinedEvents");
                 });
 
             modelBuilder.Entity("Chartypaltform.Models.Campaign", b =>
@@ -807,7 +827,7 @@ namespace Chartypaltform.Migrations
 
             modelBuilder.Entity("Chartypaltform.Models.Event", b =>
                 {
-                    b.Navigation("Attendees");
+                    b.Navigation("DonorEvents");
                 });
 
             modelBuilder.Entity("Chartypaltform.Models.Volunteering", b =>
@@ -818,6 +838,8 @@ namespace Chartypaltform.Migrations
             modelBuilder.Entity("Chartypaltform.Models.Donor", b =>
                 {
                     b.Navigation("Donations");
+
+                    b.Navigation("DonorEvents");
                 });
 #pragma warning restore 612, 618
         }

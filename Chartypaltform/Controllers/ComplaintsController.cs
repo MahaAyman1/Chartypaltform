@@ -33,17 +33,17 @@ namespace Chartypaltform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ComplaintViewModel complaintVM)
         {
-            // Get the UserId from the currently logged-in user
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId == null)
             {
-                return Unauthorized(); // Ensure the user is logged in
+                TempData["error"] = "Failed to update status. user not found.";
+                return RedirectToAction("Contact", "Home");
+
             }
 
             if (ModelState.IsValid)
             {
-                // Map the view model to the Complaint entity
                 var complaint = new Complaint
                 {
                     ComplaintText = complaintVM.ComplaintText,
@@ -53,14 +53,13 @@ namespace Chartypaltform.Controllers
                     Subject = complaintVM.Subject
                 };
 
-                // Add the complaint entity to the database context
                 _context.Complaints.Add(complaint);
-                await _context.SaveChangesAsync(); // Save changes to the database
+                await _context.SaveChangesAsync(); 
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Contact", "Home");
             }
 
-            return View(complaintVM); // If ModelState is not valid, return the view with the view model
+            return View(complaintVM); 
         }
 
         // GET: Complaints

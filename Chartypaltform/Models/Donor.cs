@@ -10,6 +10,7 @@ namespace Chartypaltform.Models
         public int Age { get; set; }
         public string Gender { get; set; }
         public virtual ICollection<Donation> Donations { get; set; }
+        public virtual ICollection<DonorEvent> DonorEvents { get; set; } = new List<DonorEvent>();
 
 
     }

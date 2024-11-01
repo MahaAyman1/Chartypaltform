@@ -58,7 +58,9 @@ namespace Chartypaltform.Areas.Administrator.Controllers
             var complaint = await _context.Complaints.FindAsync(id);
             if (complaint == null)
             {
-                return NotFound();
+                TempData["error"] = "Failed to update status. Complaint not found.";
+                return RedirectToAction(nameof(Index));
+
             }
             var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var adminUser = await _context.Users
@@ -67,7 +69,8 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 
             if (adminUser == null)
             {
-                return NotFound("Admin user not found.");
+                TempData["error"] = "Failed to update status. Admin user not found.";
+                return RedirectToAction(nameof(Index));
             }
 
 
@@ -80,7 +83,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                 complaint.Status = status;
             }
             await _context.SaveChangesAsync();
-
             ActionType actionType;
             switch (status)
             {
@@ -109,6 +111,7 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 
             _context.AdminActions.Add(adminAction);
             await _context.SaveChangesAsync();
+            TempData["success"] = "Status updated successfully.";
 
             return RedirectToAction(nameof(Index));
         }
