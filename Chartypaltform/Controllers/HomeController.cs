@@ -65,7 +65,6 @@ namespace Chartypaltform.Controllers
         [HttpPost]
         public FileResult Export()
         {
-            // Fetching the first 10 campaigns.
             List<object> campaigns = (from campaign in this._context.Campaigns.Take(10)
                                       select new[] {
                                   campaign.CampaignId.ToString(),
@@ -77,13 +76,10 @@ namespace Chartypaltform.Controllers
                                   campaign.CreatedAt.ToString("yyyy-MM-dd")
                               }).ToList<object>();
 
-            // Building an HTML string.
             StringBuilder sb = new StringBuilder();
 
-            // Table start.
             sb.Append("<table border='1' cellpadding='5' cellspacing='0' style='border: 1px solid #ccc;font-family: Arial; font-size: 10pt;'>");
 
-            // Building the Header row.
             sb.Append("<tr>");
             sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Campaign ID</th>");
             sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Campaign Name</th>");
@@ -94,7 +90,6 @@ namespace Chartypaltform.Controllers
             sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Created At</th>");
             sb.Append("</tr>");
 
-            // Building the Data rows.
             foreach (string[] campaign in campaigns)
             {
                 sb.Append("<tr>");
@@ -107,7 +102,6 @@ namespace Chartypaltform.Controllers
                 sb.Append("</tr>");
             }
 
-            // Table end.
             sb.Append("</table>");
 
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString())))

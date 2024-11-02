@@ -19,16 +19,13 @@ namespace Chartypaltform.Controllers
             _context = context;
         }
 
-        // GET: Complaints/Create
-        [Authorize(Roles = "Donor")]
+      
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Complaints/Create
-        [Authorize(Roles = "Donor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ComplaintViewModel complaintVM)
@@ -62,7 +59,6 @@ namespace Chartypaltform.Controllers
             return View(complaintVM); 
         }
 
-        // GET: Complaints
         public async Task<IActionResult> Index()
         {
             var complaints = await _context.Complaints.Include(c => c.User).ToListAsync();

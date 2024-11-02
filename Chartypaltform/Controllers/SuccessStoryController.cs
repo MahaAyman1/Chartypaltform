@@ -15,32 +15,7 @@ public class SuccessStoryController : Controller
         _context = context;
     }
 
-    /* [HttpGet]
-     public IActionResult CreateSuccessStory()
-     {
-         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-         var completedCampaigns = _context.Campaigns
-             .Where(c => c.UserId == userId && c.Status == CampaignStatus.Completed)
-             .ToList();
-
-         if (!completedCampaigns.Any())
-         {
-             ViewBag.Message = "No completed campaigns found for this user.";
-             return View();
-         }
-
-         var viewModel = new CreateStoryViewModel
-         {
-             CompletedCampaigns = completedCampaigns
-         };
-
-         if (!completedCampaigns.Any())
-         {
-             ViewBag.Message = "No completed campaigns found for this user.";
-         }
-         return View(viewModel);
-     }*/
+   
 
     [HttpGet]
     public IActionResult CreateSuccessStory()
@@ -53,7 +28,7 @@ public class SuccessStoryController : Controller
 
         var viewModel = new CreateStoryViewModel
         {
-            CompletedCampaigns = completedCampaigns ?? new List<Campaign>() // Initialize to empty list if null
+            CompletedCampaigns = completedCampaigns ?? new List<Campaign>() 
         };
 
         if (!viewModel.CompletedCampaigns.Any())
@@ -76,13 +51,11 @@ public class SuccessStoryController : Controller
             return BadRequest("Invalid campaign or permissions.");
         }
 
-        // Handling image uploads
         List<string> imagePaths = new List<string>();
         if (model.ImageFiles != null && model.ImageFiles.Count > 0)
         {
             var imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/images");
 
-            // Ensure the directory exists
             if (!Directory.Exists(imagesDirectory))
             {
                 Directory.CreateDirectory(imagesDirectory);

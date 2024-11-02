@@ -82,7 +82,6 @@ namespace Chartypaltform.Controllers
 
 
             string accessToken = await GetPaypalAccessToken();
-            // send request
             string url = PaypalUrl + "/v2/checkout/orders";
 
 
@@ -122,7 +121,6 @@ namespace Chartypaltform.Controllers
              {
                  return new JsonResult("error");
              }
-             // get access token
              string accessToken = await GetPaypalAccessToken();
 
 
@@ -145,7 +143,6 @@ namespace Chartypaltform.Controllers
                          string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
                          if (paypalOrderStatus == "COMPLETED")
                          {
-                             // save the order in the database
                              return new JsonResult("success");
 
 
@@ -154,13 +151,12 @@ namespace Chartypaltform.Controllers
                          }
                      }
                      }
-                else if (httpResponse.StatusCode == HttpStatusCode.BadRequest) // 400 Bad Request
+                else if (httpResponse.StatusCode == HttpStatusCode.BadRequest) 
                 {
                     return new JsonResult("Error: Invalid order ID or other request data issue.");
                 }
                 else
                 {
-                    // Handle other error codes or unexpected responses
                     return new JsonResult($"Error: Unexpected response from PayPal. Status code: {httpResponse.StatusCode}");
                 }
             }

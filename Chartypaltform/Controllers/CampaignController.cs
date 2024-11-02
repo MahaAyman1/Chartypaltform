@@ -12,7 +12,6 @@ using Chartypaltform.Service;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Collections.Generic;
-using Chartypaltform.Services;
 using System.Linq;
 namespace Chartypaltform.Controllers
 {
@@ -74,21 +73,20 @@ namespace Chartypaltform.Controllers
                     return View(model);
                 }
 
-                // Create campaign
                 var campaign = new Campaign
                 {
-                    CampaignImg = model.CampaignImg, // Now populated with the file URL
+                    CampaignImg = model.CampaignImg, 
                     CampaignName = model.CampaignName,
                     CampaignDes = model.CampaignDes,
                     GoalAmount = model.GoalAmount,
                     CurrentAmountRaised = 0,
                     Status = CampaignStatus.Pending,
                     CreatedAt = DateTime.Now,
-                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier), // Get the ID of the logged-in user
+                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier), 
                 };
 
               
-                // Save to the database
+                
                 _context.Campaigns.Add(campaign);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -119,38 +117,7 @@ namespace Chartypaltform.Controllers
             return View(C);
         }
 
-        public IActionResult GenerateCampaignsPDF()
-        {
-            var campaigns = _context.Campaigns.ToList();
-
-            if (campaigns == null || !campaigns.Any())
-            {
-                return NotFound("No campaigns available.");
-            }
-
-            try
-            {
-                PDFService pdfService = new PDFService();
-                var pdfFile = pdfService.GenerateCampaignsPDF(campaigns);
-
-                return File(pdfFile, "application/pdf", "Campaigns.pdf");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it accordingly
-                return BadRequest("Error generating PDF: " + ex.Message);
-            }
-        }
-
-        public IActionResult DownloadPDF()
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PDFs", "Campaigns.pdf");
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("PDF file not found.");
-            }
-            return PhysicalFile(filePath, "application/pdf", "Campaigns.pdf");
-        }
+     
     }
 }
 
