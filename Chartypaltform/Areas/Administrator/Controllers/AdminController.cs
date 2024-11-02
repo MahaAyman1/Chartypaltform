@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace Chartypaltform.Areas.Administrator.Controllers
 {
     [Area("Administrator")]
-    [Authorize(Roles = "Admin")] // Restrict access to only Super Admin
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

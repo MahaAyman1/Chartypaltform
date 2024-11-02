@@ -82,26 +82,22 @@ namespace Chartypaltform.Controllers
 
         public IActionResult MyVolunteeringOpportunities()
         {
-            // Get the current user's ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assumes you're using ASP.NET Identity
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
-            // Retrieve volunteering opportunities associated with the current user
             var opportunities = _context.Volunteerings
                 .Where(opportunity => opportunity.UserId == userId)
-                .Include(v => v.TaskSelections) // Include TaskSelections for mapping
+                .Include(v => v.TaskSelections) 
                 .ToList();
 
-            // Map the volunteering opportunities to VolunteerListViewModel
             var viewModel = opportunities.Select(opportunity => new VolunteerListViewModel
             {
                 Id = opportunity.Id,
                 AvailableFrom = opportunity.AvailableFrom,
                 AvailableTo = opportunity.AvailableTo,
-                SelectedTasks = opportunity.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList() // Convert enum to string
+                SelectedTasks = opportunity.TaskSelections.Select(ts => ts.TaskDescription.ToString()).ToList() 
             }).ToList();
 
-            // Pass the mapped view model to the view
-            return View(viewModel); // This is of type IEnumerable<VolunteerListViewModel>
+            return View(viewModel); 
         }
 
         [HttpGet]
@@ -114,18 +110,18 @@ namespace Chartypaltform.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (volunteeringOpportunity == null || volunteeringOpportunity.UserId != userId)
             {
-                return Forbid(); // Return a forbidden response if unauthorized
+                return Forbid();
             }
 
             var model = new CreateVolunteeringViewModel
             {
-                Id = volunteeringOpportunity.Id, // Include the ID for hidden input
+                Id = volunteeringOpportunity.Id, 
                 AvailableFrom = volunteeringOpportunity.AvailableFrom,
                 AvailableTo = volunteeringOpportunity.AvailableTo,
                 SelectedTasks = volunteeringOpportunity.TaskSelections.Select(ts => ts.TaskDescription).ToList()
             };
 
-            return View(model); // Return the edit view with the model
+            return View(model); 
         }
 
         [HttpPost]
@@ -135,32 +131,29 @@ namespace Chartypaltform.Controllers
             if (ModelState.IsValid)
             {
                 var volunteeringOpportunity = await _context.Volunteerings
-                    .Include(v => v.TaskSelections) // Include task selections for editing
+                    .Include(v => v.TaskSelections)
                     .FirstOrDefaultAsync(v => v.Id == id);
 
-                // Check if the user is authorized to edit this volunteering opportunity
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (volunteeringOpportunity == null || volunteeringOpportunity.UserId != userId)
                 {
-                    return Forbid(); // Return a forbidden response if unauthorized
+                    return Forbid(); 
                 }
 
-                // Update the properties of the volunteeringOpportunity
                 volunteeringOpportunity.AvailableFrom = model.AvailableFrom;
                 volunteeringOpportunity.AvailableTo = model.AvailableTo;
 
-                // Clear existing task selections and add new ones
                 volunteeringOpportunity.TaskSelections.Clear();
                 volunteeringOpportunity.TaskSelections = model.SelectedTasks.Select(task => new VolunteeringTaskSelection
                 {
-                    TaskDescription = task // Assuming TaskDescription is a string property
+                    TaskDescription = task 
                 }).ToList();
 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("MyVolunteeringOpportunities"); // Redirect to the list of opportunities
+                return RedirectToAction("MyVolunteeringOpportunities"); 
             }
 
-            return View(model); // Return the view with the model if validation fails
+            return View(model); 
         }
 
         [HttpPost]

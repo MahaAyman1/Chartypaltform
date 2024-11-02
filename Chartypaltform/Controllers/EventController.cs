@@ -25,7 +25,6 @@ namespace Chartypaltform.Controllers
             _hostEnvironment = hostEnvironment;
 
         }
-        //If You Have Time Edit It To make The Donor Join To Multi Event 
         [HttpGet]
         public IActionResult Create()
         {
@@ -116,42 +115,7 @@ namespace Chartypaltform.Controllers
         }
 
 
-        /* [HttpPost]
-         [ValidateAntiForgeryToken]
-         public async Task<IActionResult> Join(int eventId)
-         {
-             var user = await _userManager.GetUserAsync(User);
-
-             if (user is Donor donor)
-             {
-                 var eventModel = await _context.Events
-                     .Include(e => e.DonorEvents)
-                     .FirstOrDefaultAsync(e => e.Id == eventId);
-
-                 if (eventModel == null || eventModel.DonorEvents.Count >= eventModel.MaxParticipants)
-                 {
-                     return BadRequest("Event is full or not found.");
-                 }
-
-                 if (!eventModel.DonorEvents.Any(de => de.DonorId == donor.Id)) // Ensure donor is not already attending
-                 {
-                     var donorEvent = new DonorEvent
-                     {
-                         DonorId = donor.Id,
-                         EventId = eventModel.Id
-                     };
-
-                     eventModel.DonorEvents.Add(donorEvent);
-                     await _context.SaveChangesAsync();
-
-                     return RedirectToAction("Index"); // Redirect to event list after joining
-                 }
-
-                 return BadRequest("You have already joined this event.");
-             }
-
-             return Unauthorized();
-         }*/
+     
 
         public async Task<IActionResult> Index()
         {
@@ -227,10 +191,10 @@ namespace Chartypaltform.Controllers
 
                 if (donorEvent != null)
                 {
-                    _context.DonorEvents.Remove(donorEvent); // Remove the donor from this event
-                    await _context.SaveChangesAsync(); // Save changes to the database
+                    _context.DonorEvents.Remove(donorEvent); 
+                    await _context.SaveChangesAsync(); 
 
-                    return RedirectToAction("Index"); // Redirect after leaving
+                    return RedirectToAction("Event", "Home"); 
                 }
 
                 return BadRequest("You are not attending this event.");
@@ -243,7 +207,7 @@ namespace Chartypaltform.Controllers
         {
             var eventModel = await _context.Events
                 .Include(e => e.DonorEvents)
-                    .ThenInclude(de => de.Donor) // Include donor details
+                    .ThenInclude(de => de.Donor) 
                 .FirstOrDefaultAsync(e => e.Id == eventId);
 
             if (eventModel == null)
@@ -251,7 +215,7 @@ namespace Chartypaltform.Controllers
                 return NotFound();
             }
 
-            var attendees = eventModel.DonorEvents.Select(de => de.Donor).ToList(); // Get all donors attending the event
+            var attendees = eventModel.DonorEvents.Select(de => de.Donor).ToList(); 
 
             return View(attendees);
         }

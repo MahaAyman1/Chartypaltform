@@ -32,7 +32,7 @@ namespace Chartypaltform.Areas.Administrator.Controllers
         {
             var applicationDbContext = _context.Campaigns
                 .Include(c => c.User).Where(c => c.Status != CampaignStatus.Closed)
-                .OrderBy(c => c.Status == CampaignStatus.Pending ? 0 : 1) // 'Pending' campaigns come first
+                .OrderBy(c => c.Status == CampaignStatus.Pending ? 0 : 1) 
                 .ThenByDescending(c => c.CreatedAt);
 
             return View(await applicationDbContext.ToListAsync());
@@ -113,7 +113,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 
 		public FileResult Export()
 		{
-			// Fetching all campaigns.
 			List<object> campaigns = (from campaign in this._context.Campaigns
 									  select new[] {
 								  campaign.CampaignId.ToString(),
@@ -125,13 +124,10 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 								  campaign.CreatedAt.ToString("yyyy-MM-dd")
 							  }).ToList<object>();
 
-			// Building an HTML string.
 			StringBuilder sb = new StringBuilder();
 
-			// Table start.
 			sb.Append("<table border='1' cellpadding='5' cellspacing='0' style='border: 1px solid #ccc;font-family: Arial; font-size: 10pt;'>");
 
-			// Building the Header row.
 			sb.Append("<tr>");
 			sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Campaign ID</th>");
 			sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Campaign Name</th>");
@@ -142,7 +138,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 			sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Created At</th>");
 			sb.Append("</tr>");
 
-			// Building the Data rows.
 			foreach (string[] campaign in campaigns)
 			{
 				sb.Append("<tr>");
@@ -155,7 +150,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 				sb.Append("</tr>");
 			}
 
-			// Table end.
 			sb.Append("</table>");
 
 			using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString())))
@@ -173,7 +167,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
 		}
         public FileResult ExportCharityOrganizations()
         {
-            // Fetching all charity organizations.
             List<object> organizations = (from organization in this._context.CharityOrganizations
                                           select new[] {
                                       organization.OrganizationName,
@@ -182,11 +175,9 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                                       organization.Email,
                                   }).ToList<object>();
 
-            // Building an HTML string.
             StringBuilder sb = new StringBuilder();
             sb.Append("<table border='1' cellpadding='5' cellspacing='0' style='border: 1px solid #ccc; font-family: Arial; font-size: 10pt;'>");
 
-            // Building the Header row.
             sb.Append("<tr>");
             sb.Append("<th style='background-color: #B8DBFD; border: 1px solid #ccc'>Organization Name</th>");
             sb.Append("<th style='background-color: #B8DBFD; border: 1px solid #ccc'>Registration Status</th>");
@@ -194,7 +185,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
             sb.Append("<th style='background-color: #B8DBFD; border: 1px solid #ccc'>Email</th>");
             sb.Append("</tr>");
 
-            // Building the Data rows.
             foreach (string[] organization in organizations)
             {
                 sb.Append("<tr>");
@@ -216,7 +206,6 @@ namespace Chartypaltform.Areas.Administrator.Controllers
                     PdfDocument pdfDocument = new PdfDocument(writer);
                     pdfDocument.SetDefaultPageSize(PageSize.A4);
 
-                    // Convert HTML to PDF, this handles multi-page content.
                     HtmlConverter.ConvertToPdf(stream, pdfDocument);
 
                     pdfDocument.Close();

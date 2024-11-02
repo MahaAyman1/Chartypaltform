@@ -185,8 +185,8 @@ namespace Chartypaltform.Controllers
                 {
                     DonationId = d.DonationId,
                     Amount = d.Amount,
-                    DonorName = d.Donor.FullName, // Assuming the Donor model has a Name property
-                    CampaignName = d.Campaign.CampaignName, // Assuming the Campaign model has a Name property
+                    DonorName = d.Donor.FullName, 
+                    CampaignName = d.Campaign.CampaignName, 
                     DonationDate = d.DonationDate,
                     img = d.Donor.Img,
                 })
